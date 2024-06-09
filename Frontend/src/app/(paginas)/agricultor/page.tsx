@@ -1,0 +1,835 @@
+"use client";
+import React, { useState, useEffect, useRef } from "react";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import { DataGrid as MuiDataGrid } from "@mui/x-data-grid";
+import { Button } from "@mui/material";
+import { Dialog } from "@mui/material";
+import { DialogContent } from "@mui/material";
+import { DialogTitle } from "@mui/material";
+import { FormControl } from "@mui/material";
+import { FormHelperText } from "@mui/material";
+import { Grid } from "@mui/material";
+import { IconButton } from "@mui/material";
+import { InputLabel } from "@mui/material";
+import { MenuItem } from "@mui/material";
+import { Select } from "@mui/material";
+import { TextField } from "@mui/material";
+import { Typography } from "@mui/material";
+import BarraBusquedaInput from "../../components/searchBar/BarraBusquedaInput";
+import Datatable from "../../components/table/DataTable";
+import CloseIcon from "@mui/icons-material/Close";
+import { Box } from "@mui/system";
+import InputMask from "react-input-mask";
+
+const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const [isSearchBarOpen, setIsSearchBarOpen] = useState(false);
+  const [filteredRows, setFilteredRows] = useState([]);
+  const DataGrid = MuiDataGrid;
+  const [personId, setPersonId] = useState<string>("");
+  const [personRazonSocial, setPersonRazonSocial] = useState<string>("");
+  const [personDomicilio, setPersonDomicilio] = useState<string>("");
+  const [personTelefono, setPersonTelefono] = useState<string>("");
+  const [personMail, setPersonMail] = useState<string>("");
+  const [personLocalidad, setPersonLocalidad] = useState<string>("");
+  const [personProvincia, setPersonProvincia] = useState<string>("");
+  const [selectedProvincia, setSelectedProvincia] = useState(null);
+  const [personCondFrenteIva, setPersonCondFrenteIva] = useState<string>("");
+  const [personDocumento, setPersonDocumento] = useState<string>("");
+  const [estadoModal, setEstadoModal] = useState<"add" | "update">("add");
+
+  const [formData, setFormData] = useState({
+    personId: "",
+    personRazonSocial: "",
+    personDomicilio: "",
+    personTelefono: "",
+    personMail: "",
+    personLocalidad: "",
+    personProvincia: "",
+    personCondFrenteIva: "",
+    personDocumento: "",
+  });
+
+  const [error, setError] = useState({
+    error: false,
+    message: "",
+  });
+
+  const provincias = [
+    "Buenos Aires",
+    "Catamarca",
+    "Chaco",
+    "Chubut",
+    "Córdoba",
+    "Corrientes",
+    "Entre Ríos",
+    "Formosa",
+    "Jujuy",
+    "La Pampa",
+    "La Rioja",
+    "Mendoza",
+    "Misiones",
+    "Neuquén",
+    "Río Negro",
+    "Salta",
+    "San Juan",
+    "San Luis",
+    "Santa Cruz",
+    "Santa Fe",
+    "Santiago del Estero",
+    "Tierra del Fuego",
+    "Tucumán",
+  ];
+
+  const condFrenteIvaOptions = [
+    "IVA Responsable Inscripto",
+    "IVA Responsable no Inscripto",
+    "IVA no Responsable",
+    "IVA Sujeto Exento",
+    "Consumidor Final",
+    "Responsable Monotributo",
+    "Sujeto no Categorizado",
+    "Proveedor del Exterior",
+    "Cliente del Exterior",
+    "IVA Liberado",
+    "Pequeño Contribuyente Social",
+    "Monotributista Social",
+    "Pequeño Contribuyente Eventual",
+  ];
+
+  const handleOpenAdd = () => {
+    setEstadoModal("add");
+    setFormData({
+      personId: "",
+      personRazonSocial: "",
+      personDomicilio: "",
+      personTelefono: "",
+      personMail: "",
+      personLocalidad: "",
+      personProvincia: "",
+      personCondFrenteIva: "",
+      personDocumento: "",
+    });
+    setOpen(true);
+  };
+
+  const handleClickClose = (event, reason) => {
+    if (reason && reason === "backdropClick") return;
+    setOpen(false);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  const validateForm = () => {
+    const {
+      personRazonSocial,
+      personDomicilio,
+      personTelefono,
+      personMail,
+      personLocalidad,
+      personProvincia,
+      personCondFrenteIva,
+      personDocumento,
+    } = formData;
+
+    const validations = [
+      {
+        regex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+        value: personRazonSocial,
+      },
+      {
+        regex: /^[a-zA-Z0-9\s.]*$/,
+        value: personDomicilio,
+      },
+      {
+        regex: /^[0-9]{11}$/u,
+        value: personTelefono.replace(/[\s-]/g, ""),
+      },
+      {
+        regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        value: personMail,
+      },
+      {
+        regex: /[a-zA-Z]+(?:\s{0,1}[a-zA-Z]+)*$/g,
+        value: personLocalidad,
+      },
+      {
+        value: personProvincia,
+        error,
+      },
+      {
+        value: personCondFrenteIva,
+        error,
+      },
+      {
+        regex: /^[0-9]{13}$/u,
+        value: personDocumento.replace(/[\s-]/g, ""),
+      },
+    ];
+
+    for (let i = 0; i < validations.length; i++) {
+      if (!validations[i].regex) {
+        setError({ error: true, message: "" });
+        // setError({ error: true, message: validations[i].message });
+        return false;
+      }
+    }
+    setError({ error: false, message: "" });
+    return true;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      if (estadoModal === "add") {
+        handleAddCliente();
+      } else {
+        handleUpdateCliente();
+      }
+    }
+  };
+
+  const handleSearchClick = () => {
+    setIsSearchBarOpen(!isSearchBarOpen);
+  };
+
+  const columns = [
+    // {
+    //   field: "id",
+    //   headerName: "",
+    //   width: 100,
+    //   headerClassName: "custom-header",
+    //   renderCell: (params) => params.api.getAllRowIds().indexOf(params.id) + 1,
+    // },
+    {
+      field: "razonSocial",
+      headerName: "Razón Social",
+      width: 285,
+      headerClassName: "custom-header",
+    },
+    {
+      field: "direccion",
+      headerName: "Direccíon",
+      width: 285,
+      headerClassName: "custom-header",
+    },
+    {
+      field: "telefono",
+      headerName: "Teléfono",
+      width: 165,
+      headerClassName: "custom-header",
+    },
+    {
+      field: "mail",
+      headerName: "Mail",
+      width: 165,
+      headerClassName: "custom-header",
+    },
+    {
+      field: "lugar",
+      headerName: "Lugar",
+      width: 285,
+      headerClassName: "custom-header",
+    },
+    {
+      field: "condFrenteIva",
+      headerName: "Condicíon",
+      width: 275,
+      headerClassName: "custom-header",
+    },
+    {
+      field: "documento",
+      headerName: "Documento",
+      width: 140,
+      headerClassName: "custom-header",
+    },
+    // {
+    //   field: "actions",
+    //   headerName: "Acciones",
+    //   width: 205,
+    //   headerClassName: "custom-header",
+    //   renderCell: (params) => (
+    //     <Grid container alignItems="center">
+    //       <Grid item xs={6} sm={6}>
+    //         <Button
+    //           variant="outlined"
+    //           size="small"
+    //           onClick={() => handleDeleteCliente(params.row.id)}
+    //           style={{ color: "#FF0000" }}
+    //         >
+    //           <DeleteIcon />
+    //         </Button>
+    //       </Grid>
+    //       <Grid item xs={6} sm={6}>
+    //         <Button
+    //           variant="outlined"
+    //           size="small"
+    //           //onClick={() => handleEditCliente(params.row)}
+    //           style={{ color: "#008000" }}
+    //         >
+    //           <EditIcon />
+    //         </Button>
+    //       </Grid>
+    //       /{" "}
+    //     </Grid>
+    //   ),
+    // },
+  ];
+
+  // const handleRowClick = (id) => {
+  //   setSelectedRow(id);
+  // };
+
+  /*AGREGAR AGRICULTOR/GANADERO*/
+  const handleAddCliente = async () => {
+    const lugar = `${personLocalidad} - ${personProvincia}`;
+    const nuevaPersona = {
+      razonSocial: personRazonSocial,
+      direccion: personDomicilio,
+      telefono: personTelefono,
+      mail: personMail,
+      lugar: lugar,
+      condFrenteIva: personCondFrenteIva,
+      documento: personDocumento,
+    };
+
+    // Mostrar cada dato individual en la consola
+    console.log("Razón Social:", nuevaPersona.razonSocial);
+    console.log("Dirección:", nuevaPersona.direccion);
+    console.log("Teléfono:", nuevaPersona.telefono);
+    console.log("Mail:", nuevaPersona.mail);
+    console.log("Lugar:", lugar);
+    console.log("Condición Frente IVA:", nuevaPersona.condFrenteIva);
+    console.log("Documento:", nuevaPersona.documento);
+
+    try {
+      const res = await fetch("http://localhost:8080/api/agricultor", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(nuevaPersona),
+      });
+      // Verificar si la solicitud de guardado fue exitosa
+      if (!res.ok) {
+        throw new Error("Error al guardar el cliente");
+      }
+
+      // limpiarCampos();
+      setFormData;
+      const dataClientes = await fetchClientes();
+      setRows(dataClientes);
+      setOpen(false);
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  };
+
+  /*CARGAR AGRICULTOR/GANADERO EN EL DATAGRID*/
+  const fetchClientes = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/agricultor");
+      if (!res.ok) {
+        throw new Error("Error al obtener los clientes");
+      }
+      const dataClientes = await res.json();
+      return dataClientes;
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      // Devolver un valor predeterminado en caso de error
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const getData = async () => {
+      const dataClientes = await fetchClientes();
+      setRows(dataClientes);
+    };
+
+    getData();
+  }, []);
+
+  /*BUSCAR AGRICULTOR/GANADERO*/
+  const handleSearhCliente = async (value) => {
+    const filteredData = rows.filter((row) => {
+      // Filtra las filas según el valor de búsqueda
+      return (
+        row.razonSocial.toLowerCase().includes(value.toLowerCase()) ||
+        row.direccion.toLowerCase().includes(value.toLowerCase()) ||
+        row.telefono.toLowerCase().includes(value.toLowerCase()) ||
+        row.mail.toLowerCase().includes(value.toLowerCase()) ||
+        row.lugar.toLowerCase().includes(value.toLowerCase()) ||
+        row.condFrenteIva.toLowerCase().includes(value.toLowerCase()) ||
+        row.documento.toLowerCase().includes(value.toLowerCase())
+      );
+    });
+    setFilteredRows(filteredData);
+  };
+
+  /*ELIMINAR AGRICULTOR/GANADERO*/
+  const handleDeleteCliente = async (id) => {
+    console.log("Cliente a eliminar:", id);
+
+    try {
+      const res = await fetch(`http://localhost:8080/api/agricultor/${id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        console.log("Cliente eliminado exitosamente.");
+        // Actualizar el estado de las filas después de eliminar un cliente
+        const dataClientes = await fetchClientes();
+        setRows(dataClientes);
+      } else {
+        console.error("Error al eliminar el cliente:", id);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de eliminación:", error);
+    }
+  };
+
+  /*CLICK BOTON MODIFICAR(LAPIZ)*/
+  const handleClickUpdate = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/agricultor/${id}`, {
+        method: "GET",
+      });
+
+      if (res.ok) {
+        console.log("Cliente obtenido exitosamente.");
+
+        const agricultor = await res.json();
+
+        setPersonId(agricultor.id);
+        setPersonRazonSocial(agricultor.razonSocial);
+        setPersonDomicilio(agricultor.direccion);
+        setPersonTelefono(agricultor.telefono);
+        setPersonMail(agricultor.mail);
+        setPersonLocalidad(agricultor.lugar.split("-")[0].trim());
+        setPersonProvincia(agricultor.lugar.split("-")[1].trim());
+        setPersonCondFrenteIva(agricultor.condFrenteIva);
+        setPersonDocumento(agricultor.documento);
+      } else {
+        console.error("Error al modificar el cliente:", id);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de eliminación:", error);
+    }
+
+    setEstadoModal("update");
+    setOpen(true);
+  };
+
+  /*MODIFICAR AGRICULTOR/GANADERO PARA GAURDAR*/
+  const handleUpdateCliente = async () => {
+    const lugar = `${personLocalidad} - ${personProvincia}`;
+    const nuevaPersona = {
+      id: personId,
+      razonSocial: personRazonSocial,
+      direccion: personDomicilio,
+      telefono: personTelefono,
+      mail: personMail,
+      lugar: lugar,
+      condFrenteIva: personCondFrenteIva,
+      documento: personDocumento,
+    };
+
+    // Mostrar cada dato individual en la consola
+
+    console.log("Id:", nuevaPersona.id);
+    console.log("Razón Social:", nuevaPersona.razonSocial);
+    console.log("Dirección:", nuevaPersona.direccion);
+    console.log("Teléfono:", nuevaPersona.telefono);
+    console.log("Mail:", nuevaPersona.mail);
+    console.log("Lugar:", lugar);
+    console.log("Condición Frente IVA:", nuevaPersona.condFrenteIva);
+    console.log("Documento:", nuevaPersona.documento);
+
+    try {
+      const res = await fetch(`http://localhost:8080/api/agricultor`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(nuevaPersona),
+      });
+      // Verificar si la solicitud de guardado fue exitosa
+      if (!res.ok) {
+        throw new Error("Error al guardar el cliente");
+      }
+
+      //limpiarCampos();
+      setFormData;
+      const dataClientes = await fetchClientes();
+      setRows(dataClientes);
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  };
+
+  return (
+    <>
+      <div
+        style={{
+          border: "1px solid #D3D3D3",
+          padding: "20px",
+          marginTop: "20px",
+          boxSizing: "border-box",
+          backgroundColor: "#FFFAFA",
+        }}
+      >
+        <h6
+          style={{
+            marginBottom: 0,
+            fontSize: "18px",
+            marginTop: "3px",
+            display: "inline-block",
+            fontWeight: 700,
+            color: "#424242",
+          }}
+        >
+          Agricultor/Ganadero
+        </h6>
+      </div>
+
+      <div
+        style={{
+          border: "1px solid #D3D3D3",
+          padding: "20px",
+          borderRadius: "5px",
+          marginTop: "20px",
+          backgroundColor: "#FFFAFA",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            marginBottom: "20px",
+          }}
+        >
+          {/* Panel de Busqueda Cliente y Boton Agregar Cliente */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              marginBottom: "15px",
+            }}
+          >
+            <div style={{ marginRight: "25px" }}>
+              <BarraBusquedaInput
+                onChangeValue={handleSearhCliente}
+                onSearchClick={handleSearchClick}
+              />
+            </div>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleOpenAdd}
+              style={{ backgroundColor: "#0FB60B", color: "#ffffff" }}
+            >
+              <AddOutlinedIcon />
+            </Button>
+          </div>
+
+          <Dialog
+            open={open}
+            onClose={handleClickClose}
+            // maxWidth={false}
+            // fullWidth={true}
+            // style={{ maxWidth: "700px", margin: "auto" }}
+            // BackdropProps={{ onClick: (event) => event.stopPropagation() }}
+          >
+            <DialogTitle>
+              {estadoModal === "add"
+                ? "Agregar Agricultor/Ganadero"
+                : "Editar Agricultor/Ganadero"}
+              <IconButton
+                aria-label="close"
+                onClick={() => handleClickClose(null, "closeButtonClick")}
+                sx={{ position: "absolute", right: 8, top: 8 }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <Box component="form" onSubmit={handleSubmit}>
+              <DialogContent>
+                <Grid container spacing={2} style={{ padding: "0 24px" }}>
+                  <Grid
+                    item
+                    xs={12}
+                    style={{ marginTop: "25px", padding: "8px" }}
+                  >
+                    <Grid container spacing={1}>
+                      <Grid item xs={12}>
+                        <Typography
+                          variant="subtitle1"
+                          color={"textSecondary"}
+                          style={{ fontFamily: "var(--font-sans)" }}
+                        >
+                          Identificación
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          label="Razón Social"
+                          variant="outlined"
+                          id="razonSocial"
+                          name="personRazonSocial"
+                          type="text"
+                          error={error.error}
+                          helperText={error.message}
+                          fullWidth
+                          required
+                          onChange={handleInputChange}
+                          value={formData.personRazonSocial}
+                          disabled={estadoModal === "update"}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          label="Domicilio"
+                          variant="outlined"
+                          id="domicilio"
+                          name="personDomicilio"
+                          type="text"
+                          error={error.error}
+                          helperText={error.message}
+                          fullWidth
+                          required
+                          onChange={handleInputChange}
+                          value={formData.personDomicilio}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    style={{ margin: "8px 0", padding: "8px" }}
+                  >
+                    <Grid container spacing={1}>
+                      <Grid item xs={12}>
+                        <Typography
+                          variant="subtitle1"
+                          color={"textSecondary"}
+                          style={{ fontFamily: "var(--font-sans)" }}
+                        >
+                          Contacto
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <InputMask
+                          mask="(9999)-999999"
+                          value={formData.personTelefono}
+                          onChange={handleInputChange}
+                        >
+                          {() => (
+                            <TextField
+                              id="telefono"
+                              label="Teléfono"
+                              type="tel"
+                              name="personTelefono"
+                              error={error.error}
+                              helperText={error.message}
+                              required
+                              fullWidth
+                            />
+                          )}
+                        </InputMask>
+                      </Grid>
+
+                      <Grid
+                        item
+                        xs={12}
+                        md={6}
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
+                        <TextField
+                          label="Email"
+                          variant="outlined"
+                          id="email"
+                          name="personMail"
+                          type="email"
+                          required
+                          fullWidth
+                          error={error.error}
+                          helperText={error.message}
+                          onChange={handleInputChange}
+                          value={formData.personMail}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    style={{ margin: "8px 0", padding: "8px" }}
+                  >
+                    <Grid container spacing={1}>
+                      <Grid item xs={12}>
+                        <Typography
+                          variant="subtitle1"
+                          color={"textSecondary"}
+                          style={{ fontFamily: "var(--font-sans)" }}
+                        >
+                          Lugar
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          label="Localidad"
+                          variant="outlined"
+                          id="localidad"
+                          name="personLocalidad"
+                          type="text"
+                          error={error.error}
+                          helperText={error.message}
+                          fullWidth
+                          required
+                          onChange={handleInputChange}
+                          value={formData.personLocalidad}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth error={error.error}>
+                          <InputLabel id="demo-simple-select-label">
+                            Provincias
+                          </InputLabel>
+                          <Select
+                            label="Provincias"
+                            id="provincias"
+                            name="personProvincia"
+                            labelId="demo-simple-select-label"
+                            fullWidth
+                            value={formData.personProvincia}
+                            onChange={handleInputChange}
+                          >
+                            {provincias.map((provincia) => (
+                              <MenuItem key={provincia} value={provincia}>
+                                {provincia}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          {error.error && (
+                            <FormHelperText>{error.message}</FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    style={{ margin: "8px 0", padding: "8px" }}
+                  >
+                    <Grid container spacing={1}>
+                      <Grid item xs={12}>
+                        <Typography
+                          variant="subtitle1"
+                          color={"textSecondary"}
+                          style={{ fontFamily: "var(--font-sans)" }}
+                        >
+                          Datos Fiscales
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} md={7}>
+                        <FormControl fullWidth error={error.error}>
+                          <InputLabel id="demo-simple-select-label">
+                            Cond. Frente al IVA
+                          </InputLabel>
+                          <Select
+                            label="Cond. Frente al IVA"
+                            id="condIva"
+                            name="personCondFrenteIva"
+                            labelId="demo-simple-select-label"
+                            fullWidth
+                            value={formData.personCondFrenteIva}
+                            onChange={handleInputChange}
+                          >
+                            {condFrenteIvaOptions.map((option) => (
+                              <MenuItem key={option} value={option}>
+                                {option}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} md={5}>
+                        <InputMask
+                          mask="99-99999999-9"
+                          value={formData.personDocumento}
+                          onChange={handleInputChange}
+                        >
+                          {() => (
+                            <TextField
+                              id="documento"
+                              label="Documento"
+                              name="personDocumento"
+                              error={error.error}
+                              helperText={error.message}
+                              required
+                              fullWidth
+                            />
+                          )}
+                        </InputMask>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    style={{ margin: "8px 0", padding: "8px" }}
+                  >
+                    <Grid container spacing={1}>
+                      <Grid
+                        item
+                        xs={12}
+                        style={{ display: "flex", justifyContent: "flex-end" }}
+                      >
+                        <Button
+                          variant="contained"
+                          type="submit"
+                          onClick={() =>
+                            estadoModal === "add"
+                              ? handleAddCliente()
+                              : handleUpdateCliente()
+                          }
+                        >
+                          {estadoModal === "add" ? "Agregar" : "Guardar"}
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </DialogContent>
+            </Box>
+          </Dialog>
+
+          <Datatable
+            columns={columns}
+            rows={filteredRows.length > 0 ? filteredRows : rows}
+            option={true}
+            optionDeleteFunction={handleDeleteCliente}
+            optionUpdateFunction={handleClickUpdate}
+            setSelectedRow={setSelectedRow}
+            selectedRow={selectedRow}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default AgricultorGanadero;
