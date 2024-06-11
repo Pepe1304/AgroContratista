@@ -20,6 +20,7 @@ import Datatable from "../../components/table/DataTable";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box } from "@mui/system";
 import InputMask from "react-input-mask";
+import { validateField, validateForm } from "../../../utiles";
 
 const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
   const [selectedRow, setSelectedRow] = useState(null);
@@ -30,19 +31,19 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
   const [filteredRows, setFilteredRows] = useState([]);
   const DataGrid = MuiDataGrid;
   const [personId, setPersonId] = useState<string>("");
-  const [personRazonSocial, setPersonRazonSocial] = useState<string>("");
-  const [personDomicilio, setPersonDomicilio] = useState<string>("");
-  const [personTelefono, setPersonTelefono] = useState<string>("");
-  const [personMail, setPersonMail] = useState<string>("");
-  const [personLocalidad, setPersonLocalidad] = useState<string>("");
-  const [personProvincia, setPersonProvincia] = useState<string>("");
-  const [selectedProvincia, setSelectedProvincia] = useState(null);
-  const [personCondFrenteIva, setPersonCondFrenteIva] = useState<string>("");
-  const [personDocumento, setPersonDocumento] = useState<string>("");
+  // const [personRazonSocial, setPersonRazonSocial] = useState<string>("");
+  // const [personDomicilio, setPersonDomicilio] = useState<string>("");
+  // const [personTelefono, setPersonTelefono] = useState<string>("");
+  // const [personMail, setPersonMail] = useState<string>("");
+  // const [personLocalidad, setPersonLocalidad] = useState<string>("");
+  // const [personProvincia, setPersonProvincia] = useState<string>("");
+  // const [selectedProvincia, setSelectedProvincia] = useState(null);
+  // const [personCondFrenteIva, setPersonCondFrenteIva] = useState<string>("");
+  // const [personDocumento, setPersonDocumento] = useState<string>("");
   const [estadoModal, setEstadoModal] = useState<"add" | "update">("add");
 
   const [formData, setFormData] = useState({
-    personId: "",
+    //personId: "",
     personRazonSocial: "",
     personDomicilio: "",
     personTelefono: "",
@@ -53,10 +54,9 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
     personDocumento: "",
   });
 
-  const [error, setError] = useState({
-    error: false,
-    message: "",
-  });
+  const [error, setError] = useState<
+    { [fieldName: string]: any } | undefined
+  >();
 
   const provincias = [
     "Buenos Aires",
@@ -102,8 +102,13 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
 
   const handleOpenAdd = () => {
     setEstadoModal("add");
+    clearFrom();
+    setOpen(true);
+  };
+
+  const clearFrom = () => {
     setFormData({
-      personId: "",
+      //personId: "",
       personRazonSocial: "",
       personDomicilio: "",
       personTelefono: "",
@@ -113,7 +118,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
       personCondFrenteIva: "",
       personDocumento: "",
     });
-    setOpen(true);
+    setError({});
   };
 
   const handleClickClose = (event, reason) => {
@@ -127,75 +132,79 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
       ...prevFormData,
       [name]: value,
     }));
+    setError((prevFormData) => ({
+      ...prevFormData,
+      [name]: undefined,
+    }));
   };
 
-  const validateForm = () => {
-    const {
-      personRazonSocial,
-      personDomicilio,
-      personTelefono,
-      personMail,
-      personLocalidad,
-      personProvincia,
-      personCondFrenteIva,
-      personDocumento,
-    } = formData;
+  // const validateForms = () => {
+  //   const {
+  //     personRazonSocial,
+  //     personDomicilio,
+  //     personTelefono,
+  //     personMail,
+  //     personLocalidad,
+  //     personProvincia,
+  //     personCondFrenteIva,
+  //     personDocumento,
+  //   } = formData;
 
-    const validations = [
-      {
-        regex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-        value: personRazonSocial,
-      },
-      {
-        regex: /^[a-zA-Z0-9\s.]*$/,
-        value: personDomicilio,
-      },
-      {
-        regex: /^[0-9]{11}$/u,
-        value: personTelefono.replace(/[\s-]/g, ""),
-      },
-      {
-        regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-        value: personMail,
-      },
-      {
-        regex: /[a-zA-Z]+(?:\s{0,1}[a-zA-Z]+)*$/g,
-        value: personLocalidad,
-      },
-      {
-        value: personProvincia,
-        error,
-      },
-      {
-        value: personCondFrenteIva,
-        error,
-      },
-      {
-        regex: /^[0-9]{13}$/u,
-        value: personDocumento.replace(/[\s-]/g, ""),
-      },
-    ];
+  //   const validations = [
+  //     {
+  //       regex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+  //       value: personRazonSocial,
+  //     },
+  //     {
+  //       regex: /^[a-zA-Z0-9\s.]*$/,
+  //       value: personDomicilio,
+  //     },
+  //     {
+  //       regex: /^[0-9]{11}$/u,
+  //       value: personTelefono.replace(/[\s-]/g, ""),
+  //     },
+  //     {
+  //       regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  //       value: personMail,
+  //     },
+  //     {
+  //       regex: /[a-zA-Z]+(?:\s{0,1}[a-zA-Z]+)*$/g,
+  //       value: personLocalidad,
+  //     },
+  //     {
+  //       value: personProvincia,
+  //       error,
+  //     },
+  //     {
+  //       value: personCondFrenteIva,
+  //       error,
+  //     },
+  //     {
+  //       regex: /^[0-9]{13}$/u,
+  //       value: personDocumento.replace(/[\s-]/g, ""),
+  //     },
+  //   ];
 
-    for (let i = 0; i < validations.length; i++) {
-      if (!validations[i].regex) {
-        setError({ error: true, message: "" });
-        // setError({ error: true, message: validations[i].message });
-        return false;
-      }
-    }
-    setError({ error: false, message: "" });
-    return true;
-  };
+  //   for (let i = 0; i < validations.length; i++) {
+  //     if (!validations[i].regex) {
+  //       setError(undefined);
+  //       // setError({ error: true, message: validations[i].message });
+  //       return false;
+  //     }
+  //   }
+  //   setError(undefined);
+  //   return true;
+  // };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      if (estadoModal === "add") {
-        handleAddCliente();
-      } else {
-        handleUpdateCliente();
-      }
-    }
+    // if (validateForms()) {
+    //   if (estadoModal === "add") {
+    //     handleAddCliente();
+    //   } else {
+    //     handleUpdateCliente();
+    //   }
+    // }
   };
 
   const handleSearchClick = () => {
@@ -291,16 +300,29 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
 
   /*AGREGAR AGRICULTOR/GANADERO*/
   const handleAddCliente = async () => {
-    const lugar = `${personLocalidad} - ${personProvincia}`;
+    const lugar = `${formData.personLocalidad} - ${formData.personProvincia}`;
     const nuevaPersona = {
-      razonSocial: personRazonSocial,
-      direccion: personDomicilio,
-      telefono: personTelefono,
-      mail: personMail,
+      razonSocial: formData.personRazonSocial,
+      direccion: formData.personDomicilio,
+      telefono: formData.personTelefono,
+      mail: formData.personMail,
       lugar: lugar,
-      condFrenteIva: personCondFrenteIva,
-      documento: personDocumento,
+      condFrenteIva: formData.personCondFrenteIva,
+      documento: formData.personDocumento,
     };
+
+    const errors = validateForm(formData, {
+      personRazonSocial: {
+        valid: (v: string) => /^[a-zA-Z\s]+$/.test(v),
+        error: "Introduce su Nombre y Apellido Correctamente",
+      },
+    });
+
+    console.log(errors);
+    if (errors) {
+      setError(errors);
+      return;
+    }
 
     // Mostrar cada dato individual en la consola
     console.log("Razón Social:", nuevaPersona.razonSocial);
@@ -324,8 +346,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
         throw new Error("Error al guardar el cliente");
       }
 
-      // limpiarCampos();
-      setFormData;
+      clearFrom();
       const dataClientes = await fetchClientes();
       setRows(dataClientes);
       setOpen(false);
@@ -399,7 +420,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
   };
 
   /*CLICK BOTON MODIFICAR(LAPIZ)*/
-  const handleClickUpdate = async (id) => {
+  const handleEdit = async (id) => {
     try {
       const res = await fetch(`http://localhost:8080/api/agricultor/${id}`, {
         method: "GET",
@@ -409,16 +430,16 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
         console.log("Cliente obtenido exitosamente.");
 
         const agricultor = await res.json();
-
-        setPersonId(agricultor.id);
-        setPersonRazonSocial(agricultor.razonSocial);
-        setPersonDomicilio(agricultor.direccion);
-        setPersonTelefono(agricultor.telefono);
-        setPersonMail(agricultor.mail);
-        setPersonLocalidad(agricultor.lugar.split("-")[0].trim());
-        setPersonProvincia(agricultor.lugar.split("-")[1].trim());
-        setPersonCondFrenteIva(agricultor.condFrenteIva);
-        setPersonDocumento(agricultor.documento);
+        setFormData({
+          personRazonSocial: agricultor.razonSocial,
+          personDomicilio: agricultor.direccion,
+          personTelefono: agricultor.telefono,
+          personMail: agricultor.mail,
+          personLocalidad: agricultor.localidad.split("-")[0].trim,
+          personProvincia: agricultor.provincia.split("-")[0].trim,
+          personCondFrenteIva: agricultor.condFrenteIva,
+          personDocumento: agricultor.documento,
+        });
       } else {
         console.error("Error al modificar el cliente:", id);
       }
@@ -430,18 +451,19 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
     setOpen(true);
   };
 
+
   /*MODIFICAR AGRICULTOR/GANADERO PARA GAURDAR*/
   const handleUpdateCliente = async () => {
-    const lugar = `${personLocalidad} - ${personProvincia}`;
+    const lugar = `${formData.personLocalidad} - ${formData.personProvincia}`;
     const nuevaPersona = {
       id: personId,
-      razonSocial: personRazonSocial,
-      direccion: personDomicilio,
-      telefono: personTelefono,
-      mail: personMail,
+      razonSocial: formData.personRazonSocial,
+      direccion: formData.personDomicilio,
+      telefono: formData.personTelefono,
+      mail: formData.personMail,
       lugar: lugar,
-      condFrenteIva: personCondFrenteIva,
-      documento: personDocumento,
+      condFrenteIva: formData.personCondFrenteIva,
+      documento: formData.personDocumento,
     };
 
     // Mostrar cada dato individual en la consola
@@ -469,7 +491,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
       }
 
       //limpiarCampos();
-      setFormData;
+      //setFormData;
       const dataClientes = await fetchClientes();
       setRows(dataClientes);
     } catch (error) {
@@ -588,8 +610,8 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                           id="razonSocial"
                           name="personRazonSocial"
                           type="text"
-                          error={error.error}
-                          helperText={error.message}
+                          error={validateField(error, "personRazonSocial")}
+                          helperText={validateField(error, "personRazonSocial")}
                           fullWidth
                           required
                           onChange={handleInputChange}
@@ -604,8 +626,8 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                           id="domicilio"
                           name="personDomicilio"
                           type="text"
-                          error={error.error}
-                          helperText={error.message}
+                          error={validateField(error, "personDomicilio")}
+                          helperText={validateField(error, "personDomicilio")}
                           fullWidth
                           required
                           onChange={handleInputChange}
@@ -641,8 +663,11 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                               label="Teléfono"
                               type="tel"
                               name="personTelefono"
-                              error={error.error}
-                              helperText={error.message}
+                              error={validateField(error, "personTelefono")}
+                              helperText={validateField(
+                                error,
+                                "personTelefono"
+                              )}
                               required
                               fullWidth
                             />
@@ -664,8 +689,8 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                           type="email"
                           required
                           fullWidth
-                          error={error.error}
-                          helperText={error.message}
+                          error={validateField(error, "personMail")}
+                          helperText={validateField(error, "personMail")}
                           onChange={handleInputChange}
                           value={formData.personMail}
                         />
@@ -694,8 +719,8 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                           id="localidad"
                           name="personLocalidad"
                           type="text"
-                          error={error.error}
-                          helperText={error.message}
+                          error={validateField(error, "personLocalidad")}
+                          helperText={validateField(error, "personLocalidad")}
                           fullWidth
                           required
                           onChange={handleInputChange}
@@ -703,7 +728,10 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                         />
                       </Grid>
                       <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={error.error}>
+                        <FormControl
+                          fullWidth
+                          error={validateField(error, "personProvincia")}
+                        >
                           <InputLabel id="demo-simple-select-label">
                             Provincias
                           </InputLabel>
@@ -722,8 +750,10 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                               </MenuItem>
                             ))}
                           </Select>
-                          {error.error && (
-                            <FormHelperText>{error.message}</FormHelperText>
+                          {error && (
+                            <FormHelperText>
+                              {validateField(error, "personProvincia")}
+                            </FormHelperText>
                           )}
                         </FormControl>
                       </Grid>
@@ -745,7 +775,10 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                         </Typography>
                       </Grid>
                       <Grid item xs={12} md={7}>
-                        <FormControl fullWidth error={error.error}>
+                        <FormControl
+                          fullWidth
+                          error={validateField(error, "personCondFrenteIva")}
+                        >
                           <InputLabel id="demo-simple-select-label">
                             Cond. Frente al IVA
                           </InputLabel>
@@ -764,6 +797,11 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                               </MenuItem>
                             ))}
                           </Select>
+                          {error && (
+                            <FormHelperText>
+                              {validateField(error, "personCondFrenteIva")}
+                            </FormHelperText>
+                          )}
                         </FormControl>
                       </Grid>
                       <Grid item xs={12} md={5}>
@@ -777,8 +815,11 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                               id="documento"
                               label="Documento"
                               name="personDocumento"
-                              error={error.error}
-                              helperText={error.message}
+                              error={validateField(error, "personDocumento")}
+                              helperText={validateField(
+                                error,
+                                "personDocumento"
+                              )}
                               required
                               fullWidth
                             />
@@ -801,10 +842,10 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                         <Button
                           variant="contained"
                           type="submit"
-                          onClick={() =>
+                          onClick={
                             estadoModal === "add"
-                              ? handleAddCliente()
-                              : handleUpdateCliente()
+                              ? handleAddCliente
+                              : handleUpdateCliente
                           }
                         >
                           {estadoModal === "add" ? "Agregar" : "Guardar"}
@@ -822,7 +863,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
             rows={filteredRows.length > 0 ? filteredRows : rows}
             option={true}
             optionDeleteFunction={handleDeleteCliente}
-            optionUpdateFunction={handleClickUpdate}
+            optionUpdateFunction={handleUpdateCliente}
             setSelectedRow={setSelectedRow}
             selectedRow={selectedRow}
           />
