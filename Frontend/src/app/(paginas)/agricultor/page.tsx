@@ -20,7 +20,7 @@ import Datatable from "../../components/table/DataTable";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box } from "@mui/system";
 import InputMask from "react-input-mask";
-import { validateField, validateForm } from "../../../utiles";
+import { validateField, validateForm } from "../../../utiles/validarFormFields";
 
 const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
   const [selectedRow, setSelectedRow] = useState(null);
@@ -41,7 +41,6 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
   // const [personCondFrenteIva, setPersonCondFrenteIva] = useState<string>("");
   // const [personDocumento, setPersonDocumento] = useState<string>("");
   const [estadoModal, setEstadoModal] = useState<"add" | "update">("add");
-
   const [selectedClientId, setSelectedClientId] = useState(null);
 
   const handleClientSelect = (clientId) => {
@@ -158,73 +157,8 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
     }));
   };
 
-  // const validateForms = () => {
-  //   const {
-  //     personRazonSocial,
-  //     personDomicilio,
-  //     personTelefono,
-  //     personMail,
-  //     personLocalidad,
-  //     personProvincia,
-  //     personCondFrenteIva,
-  //     personDocumento,
-  //   } = formData;
-
-  //   const validations = [
-  //     {
-  //       regex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-  //       value: personRazonSocial,
-  //     },
-  //     {
-  //       regex: /^[a-zA-Z0-9\s.]*$/,
-  //       value: personDomicilio,
-  //     },
-  //     {
-  //       regex: /^[0-9]{11}$/u,
-  //       value: personTelefono.replace(/[\s-]/g, ""),
-  //     },
-  //     {
-  //       regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-  //       value: personMail,
-  //     },
-  //     {
-  //       regex: /[a-zA-Z]+(?:\s{0,1}[a-zA-Z]+)*$/g,
-  //       value: personLocalidad,
-  //     },
-  //     {
-  //       value: personProvincia,
-  //       error,
-  //     },
-  //     {
-  //       value: personCondFrenteIva,
-  //       error,
-  //     },
-  //     {
-  //       regex: /^[0-9]{13}$/u,
-  //       value: personDocumento.replace(/[\s-]/g, ""),
-  //     },
-  //   ];
-
-  //   for (let i = 0; i < validations.length; i++) {
-  //     if (!validations[i].regex) {
-  //       setError(undefined);
-  //       // setError({ error: true, message: validations[i].message });
-  //       return false;
-  //     }
-  //   }
-  //   setError(undefined);
-  //   return true;
-  // };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    // if (validateForms()) {
-    //   if (estadoModal === "add") {
-    //     handleAddCliente();
-    //   } else {
-    //     handleUpdateCliente();
-    //   }
-    // }
   };
 
   const handleSearchClick = () => {
