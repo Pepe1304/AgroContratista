@@ -42,6 +42,26 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
   // const [personDocumento, setPersonDocumento] = useState<string>("");
   const [estadoModal, setEstadoModal] = useState<"add" | "update">("add");
 
+  const [selectedClientId, setSelectedClientId] = useState(null);
+
+  const handleClientSelect = (clientId) => {
+    setSelectedClientId(clientId);
+
+    const selectedClient = rows.find((row) => row.id === clientId);
+    if (selectedClient) {
+      setFormData({
+        personRazonSocial: selectedClient.razonSocial,
+        personDomicilio: selectedClient.direccion,
+        personTelefono: selectedClient.telefono,
+        personMail: selectedClient.mail,
+        personLocalidad: selectedClient.localidad,
+        personProvincia: selectedClient.provincia,
+        personCondFrenteIva: selectedClient.condFrenteIva,
+        personDocumento: selectedClient.documento,
+      });
+    }
+  };
+
   const [formData, setFormData] = useState({
     //personId: "",
     personRazonSocial: "",
@@ -294,10 +314,6 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
     // },
   ];
 
-  // const handleRowClick = (id) => {
-  //   setSelectedRow(id);
-  // };
-
   /*AGREGAR AGRICULTOR/GANADERO*/
   const handleAddCliente = async () => {
     const lugar = `${formData.personLocalidad} - ${formData.personProvincia}`;
@@ -314,7 +330,36 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
     const errors = validateForm(formData, {
       personRazonSocial: {
         valid: (v: string) => /^[a-zA-Z\s]+$/.test(v),
-        error: "Introduce su Nombre y Apellido Correctamente",
+        error: "Introdroduzca su Nombre y Apellido",
+      },
+      personDomicilio: {
+        valid: (v: string) => /^[a-zA-Z0-9\s.]*$/.test(v),
+        error: "Introdroduzca su Direccion",
+      },
+      personTelefono: {
+        valid: (v: string) => /[0-9]+(?:\s{0,1}[0-9]+)*$/g.test(v),
+        error: "Introdroduzca su Teléfono",
+      },
+      personMail: {
+        valid: (v: string) =>
+          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v),
+        error: "Introdroduzca su Emal",
+      },
+      personLocalidad: {
+        valid: (v: string) => /^[a-zA-Z\s]+$/.test(v),
+        error: "Introdroduzca su Localidad",
+      },
+      personProvincia: {
+        valid: (v: string) => /[a-zA-Z]+(?:\s{0,1}[a-zA-Z]+)*$/g.test(v),
+        error: "Seleccione la Provincia",
+      },
+      personCondFrenteIva: {
+        valid: (v: string) => /[a-zA-Z]+(?:\s{0,1}[a-zA-Z]+)*$/g.test(v),
+        error: "Seleccione la Condícion",
+      },
+      personDocumento: {
+        valid: (v: string) => /[0-9]+(?:\s{0,1}[0-9]+)*$/g.test(v),
+        error: "Introduzca su Documento",
       },
     });
 
@@ -435,8 +480,8 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
           personDomicilio: agricultor.direccion,
           personTelefono: agricultor.telefono,
           personMail: agricultor.mail,
-          personLocalidad: agricultor.localidad.split("-")[0].trim,
-          personProvincia: agricultor.provincia.split("-")[0].trim,
+          personLocalidad: agricultor.lugar.split(" - ")[0].trim(), // Corregido
+          personProvincia: agricultor.lugar.split(" - ")[1].trim(), // Corregido
           personCondFrenteIva: agricultor.condFrenteIva,
           personDocumento: agricultor.documento,
         });
@@ -451,12 +496,12 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
     setOpen(true);
   };
 
-
   /*MODIFICAR AGRICULTOR/GANADERO PARA GAURDAR*/
   const handleUpdateCliente = async () => {
+    if (!selectedRow) return;
     const lugar = `${formData.personLocalidad} - ${formData.personProvincia}`;
     const nuevaPersona = {
-      id: personId,
+      id: selectedRow.id,
       razonSocial: formData.personRazonSocial,
       direccion: formData.personDomicilio,
       telefono: formData.personTelefono,
@@ -467,8 +512,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
     };
 
     // Mostrar cada dato individual en la consola
-
-    console.log("Id:", nuevaPersona.id);
+    // console.log("Id:", nuevaPersona.id);
     console.log("Razón Social:", nuevaPersona.razonSocial);
     console.log("Dirección:", nuevaPersona.direccion);
     console.log("Teléfono:", nuevaPersona.telefono);
@@ -490,10 +534,16 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
         throw new Error("Error al guardar el cliente");
       }
 
-      //limpiarCampos();
-      //setFormData;
-      const dataClientes = await fetchClientes();
-      setRows(dataClientes);
+      // Actualizar el estado rows
+      const updatedRows = rows.map((row) => {
+        if (row.id === nuevaPersona.id) {
+          return nuevaPersona; // Actualizar el cliente modificado
+        }
+        return row;
+      });
+      setRows(updatedRows);
+      clearFrom();
+      setOpen(false);
     } catch (error) {
       console.error("Error en la solicitud:", error);
     }
@@ -863,7 +913,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
             rows={filteredRows.length > 0 ? filteredRows : rows}
             option={true}
             optionDeleteFunction={handleDeleteCliente}
-            optionUpdateFunction={handleUpdateCliente}
+            optionUpdateFunction={handleEdit}
             setSelectedRow={setSelectedRow}
             selectedRow={selectedRow}
           />
