@@ -31,15 +31,6 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
   const [filteredRows, setFilteredRows] = useState([]);
   const DataGrid = MuiDataGrid;
   const [personId, setPersonId] = useState<string>("");
-  // const [personRazonSocial, setPersonRazonSocial] = useState<string>("");
-  // const [personDomicilio, setPersonDomicilio] = useState<string>("");
-  // const [personTelefono, setPersonTelefono] = useState<string>("");
-  // const [personMail, setPersonMail] = useState<string>("");
-  // const [personLocalidad, setPersonLocalidad] = useState<string>("");
-  // const [personProvincia, setPersonProvincia] = useState<string>("");
-  // const [selectedProvincia, setSelectedProvincia] = useState(null);
-  // const [personCondFrenteIva, setPersonCondFrenteIva] = useState<string>("");
-  // const [personDocumento, setPersonDocumento] = useState<string>("");
   const [estadoModal, setEstadoModal] = useState<"add" | "update">("add");
   const [selectedClientId, setSelectedClientId] = useState(null);
 
@@ -127,7 +118,6 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
 
   const clearFrom = () => {
     setFormData({
-      //personId: "",
       personRazonSocial: "",
       personDomicilio: "",
       personTelefono: "",
@@ -267,7 +257,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
         error: "Introdroduzca su Nombre y Apellido",
       },
       personDomicilio: {
-        valid: (v: string) => /^[a-zA-Z0-9\s.]*$/.test(v),
+        valid: (v: string) => /^[a-zA-Z0-9\s.Ññ]*$/.test(v),
         error: "Introdroduzca su Direccion",
       },
       personTelefono: {
@@ -483,6 +473,30 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
     }
   };
 
+  const selectProvinciaRef = useRef(null);
+  const selectCondIvaRef = useRef(null);
+  const documentoRef = useRef(null);
+
+  const handleLocalidadKeyDown = (event) => {
+    if (event.key === "Enter") {
+      selectProvinciaRef.current.focus();
+    }
+  };
+
+  const handleProvinciaChange = (event) => {
+    handleInputChange(event);
+    setTimeout(() => {
+      selectCondIvaRef.current.focus();
+    }, 0);
+  };
+
+  const handleCondIvaChange = (event) => {
+    handleInputChange(event);
+    setTimeout(() => {
+      documentoRef.current.focus();
+    }, 0);
+  };
+
   return (
     <>
       <div
@@ -549,14 +563,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
             </Button>
           </div>
 
-          <Dialog
-            open={open}
-            onClose={handleClickClose}
-            // maxWidth={false}
-            // fullWidth={true}
-            // style={{ maxWidth: "700px", margin: "auto" }}
-            // BackdropProps={{ onClick: (event) => event.stopPropagation() }}
-          >
+          <Dialog open={open} onClose={handleClickClose}>
             <DialogTitle>
               {estadoModal === "add"
                 ? "Agregar Agricultor/Ganadero"
@@ -708,6 +715,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                           fullWidth
                           required
                           onChange={handleInputChange}
+                          onKeyDown={handleLocalidadKeyDown}
                           value={formData.personLocalidad}
                         />
                       </Grid>
@@ -726,7 +734,8 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                             labelId="demo-simple-select-label"
                             fullWidth
                             value={formData.personProvincia}
-                            onChange={handleInputChange}
+                            onChange={handleProvinciaChange}
+                            inputRef={selectProvinciaRef}
                           >
                             {provincias.map((provincia) => (
                               <MenuItem key={provincia} value={provincia}>
@@ -773,7 +782,8 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                             labelId="demo-simple-select-label"
                             fullWidth
                             value={formData.personCondFrenteIva}
-                            onChange={handleInputChange}
+                            onChange={handleCondIvaChange}
+                            inputRef={selectCondIvaRef}
                           >
                             {condFrenteIvaOptions.map((option) => (
                               <MenuItem key={option} value={option}>
@@ -806,6 +816,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
                               )}
                               required
                               fullWidth
+                              inputRef={documentoRef}
                             />
                           )}
                         </InputMask>
