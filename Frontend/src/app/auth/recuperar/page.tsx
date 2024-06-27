@@ -1,6 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
-import {Button,Typography,Box,Stepper,Step,StepLabel,Grid,Divider,} from "@mui/material";
-import TextInput from "../../components/text/TextInput";
+import {
+  Button,
+  Typography,
+  Box,
+  Stepper,
+  Step,
+  StepLabel,
+  Grid,
+  Divider,
+} from "@mui/material";
+//import TextInput from "../../components/text/TextInput";
 import IconoPersonalizado from "../../components/icon/IconoPersonalizado";
 import { StepIconProps } from "@mui/material/StepIcon";
 import { useRouter } from "next/navigation";
@@ -8,7 +17,8 @@ import { useRouter } from "next/navigation";
 const RecuperarPassword = ({ goToLogin }: { goToLogin: () => void }) => {
   const [userMail, setUserMail] = useState<string>("");
   const [userPassword, setUserPassword] = useState<string>("");
-  const [userConfirmarPassword, setUserConfirmarPassword] =useState<string>("");
+  const [userConfirmarPassword, setUserConfirmarPassword] =
+    useState<string>("");
   const [message, setMessage] = useState<string>("");
   const emailRef = useRef<HTMLInputElement>(null);
   const [showForm, setShowForm] = useState(true);
@@ -271,7 +281,7 @@ const RecuperarPassword = ({ goToLogin }: { goToLogin: () => void }) => {
                   />
                 </Grid>
                 <Grid item xs={8}>
-                  <TextInput
+                  {/* <TextInput
                     type="email"
                     toolTipPosition="left"
                     label="Email"
@@ -279,7 +289,7 @@ const RecuperarPassword = ({ goToLogin }: { goToLogin: () => void }) => {
                     onChange={(value) => setUserMail(value)}
                     style={undefined}
                     onKeyUp={undefined}
-                  />
+                  /> */}
                 </Grid>
                 <Grid item xs={4} style={{ marginTop: "10px", paddingLeft: 0 }}>
                   <Button
@@ -330,7 +340,7 @@ const RecuperarPassword = ({ goToLogin }: { goToLogin: () => void }) => {
                         paddingRight: 5,
                       }}
                     >
-                      <TextInput
+                      {/* <TextInput
                         id={"codigo" + i}
                         type="token"
                         onChange={(e) => {
@@ -362,7 +372,7 @@ const RecuperarPassword = ({ goToLogin }: { goToLogin: () => void }) => {
                         }}
                         toolTipPosition={undefined}
                         label={undefined}
-                      />
+                      /> */}
                     </Grid>
                   ))}
                 </Grid>
@@ -402,25 +412,25 @@ const RecuperarPassword = ({ goToLogin }: { goToLogin: () => void }) => {
                     xs={7}
                     style={{ marginTop: "35px", paddingRight: 15 }}
                   >
-                    <TextInput
+                    {/* <TextInput
                       type="password"
                       toolTipPosition="left"
                       label="Contraseña"
                       value={userPassword}
                       onChange={(value) => setUserPassword(value)}
                       style={undefined}
-                    />
+                    /> */}
                   </Grid>
 
                   <Grid item xs={7} style={{ paddingRight: 15 }}>
-                    <TextInput
+                    {/* <TextInput
                       type="password"
                       toolTipPosition="left"
                       label="Confirmar Contraseña"
                       value={userConfirmarPassword}
                       onChange={(value) => setUserConfirmarPassword(value)}
                       style={undefined}
-                    />
+                    /> */}
                     {errorMessage && (
                       <div style={{ color: "red" }}>{errorMessage}</div>
                     )}

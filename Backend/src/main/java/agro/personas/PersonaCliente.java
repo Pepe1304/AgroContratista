@@ -46,10 +46,10 @@ public class PersonaCliente {
                 .orElseThrow(() -> new RuntimeException("Persona no encontrada"));
 
     }
-    
-    /*Modificar Persona */
-    public void modificarPersonaPorId( PersonaModelo personaActualizada) {
-        
+
+    /* Modificar Persona */
+    public void modificarPersonaPorId(PersonaModelo personaActualizada) {
+
         PersonaModelo personaExistente = personaRepositorio.findById(personaActualizada.getId())
                 .orElseThrow(() -> new RuntimeException("Persona no encontrada"));
         personaExistente.setRazonSocial(personaActualizada.getRazonSocial());

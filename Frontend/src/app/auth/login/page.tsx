@@ -4,7 +4,7 @@ import { Avatar, Button, Grid, Link, Paper, Typography } from "@mui/material";
 import IconoPersonalizado from "../../components/icon/IconoPersonalizado";
 import { useRouter } from "next/navigation";
 import { verificarLogin } from "../../../utiles/verificarLogin";
-import TextInput from "../../components/text/TextInput";
+//import TextInput from "../../components/text/TextInput";
 import { useForm } from "react-hook-form";
 
 const IniciarSesion = ({
@@ -141,7 +141,7 @@ const IniciarSesion = ({
         marginTop={2}
       >
         <Grid item xs={12} sm={6} sx={{ marginTop: 2, paddingRight: 2 }}>
-          <TextInput
+          {/* <TextInput
             type={"email"}
             toolTipPosition={"left"}
             label={"Email"}
@@ -149,10 +149,10 @@ const IniciarSesion = ({
             onChange={(value) => setUserMail(value)}
             style={undefined}
             onKeyUp={undefined}
-          />
+          /> */}
         </Grid>
         <Grid item xs={12} sm={6} sx={{ marginTop: 2, paddingRight: 2 }}>
-          <TextInput
+          {/* <TextInput
             type={"password"}
             toolTipPosition={"right"}
             label={"Contraseña"}
@@ -160,7 +160,7 @@ const IniciarSesion = ({
             onChange={(value) => setUserContraseña(value)}
             style={undefined}
             onKeyUp={undefined}
-          />
+          /> */}
         </Grid>
 
         <Grid

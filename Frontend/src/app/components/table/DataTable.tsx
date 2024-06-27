@@ -28,7 +28,7 @@ const ActionIconButton = styled(IconButton)`
 const CustomTableHead = styled(TableHead)`
   && {
     text-align: center;
-    background-color: #424242;
+    background-color: #4caf50;
     color: #000000;
     font-family: var(--font-mono); // Aplica la fuente para el encabezado
     .MuiTableCell-root {
@@ -54,7 +54,7 @@ const CustomTableRow = styled(TableRow)`
         color: #424242 !important;
       }
     }
-    font-family: var(--font-sans); // Aplica la fuente para el cuerpo
+    //   font-family: var(--font-sans); // Aplica la fuente para el cuerpo
   }
 `;
 
@@ -65,10 +65,10 @@ const CustomPageNumberContainer = styled("div")`
   line-height: 36px; /* Centramos verticalmente el número */
   text-align: center;
   border-radius: 50%; /* Borde circular */
-  background-color: #424242; /* Color de fondo del círculo */
+  background-color: #4caf50; /* Color de fondo del círculo */
   color: #fff; /* Color del texto */
   margin-right: 4px; /* Espacio entre los círculos */
-  font-family: var(--font-serif);
+  // font-family: var(--font-serif);
 `;
 
 export default function Datatable({
@@ -161,7 +161,7 @@ export default function Datatable({
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage="Filas por página"
+        rowsPerPageOptions={[5, 10, 25, 50, 100, { label: "Todos", value: -1 }]}
         nextIconButtonProps={{ style: { color: "#424242" } }}
         backIconButtonProps={{ style: { color: "#424242" } }}
         SelectProps={{

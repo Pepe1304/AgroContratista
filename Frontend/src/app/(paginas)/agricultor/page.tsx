@@ -505,7 +505,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
           padding: "20px",
           marginTop: "20px",
           boxSizing: "border-box",
-          backgroundColor: "#FFFAFA",
+          backgroundColor: "#4CAF50",
         }}
       >
         <h6
@@ -515,7 +515,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
             marginTop: "3px",
             display: "inline-block",
             fontWeight: 700,
-            color: "#424242",
+            color: "#fff",
           }}
         >
           Agricultor/Ganadero

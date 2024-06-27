@@ -162,12 +162,16 @@ export default function MenuPrincipal({
       tooltip: "Agricultor/Ganadero",
     },
     {
-      text: "Establecimientos",
+      text: "Establecimiento",
       icon: (
-        <IconoPersonalizado icono={"establecimiento.png"} width={32} height={32} />
+        <IconoPersonalizado
+          icono={"establecimiento.png"}
+          width={32}
+          height={32}
+        />
       ),
-      path: "/establecimientos",
-      tooltip: "Establecimientos",
+      path: "/establecimiento",
+      tooltip: "Establecimiento",
     },
     {
       text: "Cultivos",

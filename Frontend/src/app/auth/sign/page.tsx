@@ -3,8 +3,8 @@ import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Paper, Grid, Avatar, Typography, Button } from "@mui/material";
 import IconoPersonalizado from "../../components/icon/IconoPersonalizado";
-import ButtonInput from "../../components/button/ButtonInput";
-import TextInput from "../../components/text/TextInput";
+//import ButtonInput from "../../components/button/ButtonInput";
+//import TextInput from "../../components/text/TextInput";
 
 /*Registar se encarga de manejar un formulario y tiene un estilo definido en el objeto paperStyle. 
 La función useForm() se utiliza para obtener información relacionada con el formulario.*/
@@ -13,7 +13,7 @@ const Registar = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  
+
   /*Funcion onSubmit con palabra clave async para indicar que es asincronica con argumentos data(datos)*/
   const onSubmit = async () => {};
   /*Hook de estado useState.*/
@@ -90,7 +90,7 @@ const Registar = () => {
           height: 60,
           backgroundColor: "#FFFFFF",
           margin: "0 auto",
-          border:"1px solid red"
+          border: "1px solid red",
         }}
       >
         <IconoPersonalizado icono="registrar.png" width={32} height={32} />
@@ -107,13 +107,12 @@ const Registar = () => {
           justifyContent: "center",
           textAlign: "center",
           fontWeight: "bold",
-          
         }}
       >
         Registrarse
       </Typography>
 
-      <Grid container justifyContent="center" >
+      <Grid container justifyContent="center">
         <Typography
           sx={{
             margin: "auto",
@@ -132,53 +131,48 @@ const Registar = () => {
       </Grid>
 
       <Grid container spacing={2} marginLeft={-1} marginTop={1}>
-        <Grid item xs={12} sm={6} sx={{  paddingRight: 2 }}>
-          <TextInput
+        <Grid item xs={12} sm={6} sx={{ paddingRight: 2 }}>
+          {/* <TextInput
             type={"text"}
             toolTipPosition={"left"}
             label={"Nombre"}
             value={userNombre}
             onChange={(value) => setUserNombre(value)}
             style={undefined}
-          />
+          /> */}
         </Grid>
 
-        <Grid item xs={12} sm={6} sx={{  paddingRight: 2 }}>
-          <TextInput
+        <Grid item xs={12} sm={6} sx={{ paddingRight: 2 }}>
+          {/* <TextInput
             type={"text"}
             toolTipPosition={"right"}
             label={"Apellido"}
             value={userApellido}
             onChange={(value) => setUserApellido(value)}
             style={undefined}
-          />
+          /> */}
         </Grid>
 
         <Grid item xs={12} sm={6} sx={{ paddingRight: 2 }}>
-          <TextInput
+          {/* <TextInput
             type={"email"}
             toolTipPosition={"left"}
             label={"Email"}
             value={userMail}
             onChange={(value) => setUserMail(value)}
             style={undefined}
-          />
+          /> */}
         </Grid>
 
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          sx={{ paddingRight: 2}}
-        >
-          <TextInput
+        <Grid item xs={12} sm={6} sx={{ paddingRight: 2 }}>
+          {/* <TextInput
             type={"password"}
             toolTipPosition={"right"}
             label={"Contraseña"}
             value={userContraseña}
             onChange={(value) => setUserContraseña(value)}
             style={undefined}
-          />
+          /> */}
         </Grid>
       </Grid>
 
