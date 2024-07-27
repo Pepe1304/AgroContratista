@@ -5,6 +5,8 @@ import IniciarSesion from "../login/page";
 import Registar from "../sign/page";
 import RecuperarPassword from "../recuperar/page";
 import IconoPersonalizado from "../../components/icon/IconoPersonalizado";
+import { motion } from "framer-motion";
+import { useAnimation } from "framer-motion";
 
 const Contenedorsesiónsalida = () => {
   const [value, setValue] = useState<number>(0);
@@ -12,13 +14,7 @@ const Contenedorsesiónsalida = () => {
   const [recuperarPasswordHabilitado, setRecuperarPasswordHabilitado] =useState(false);
 
   const paperStyle: React.CSSProperties = {
-    padding: 20,
-    height: "60vh",
-    width: 550,
-    margin: "150px auto",
-    border: "1px solid black",
-    fontWeight: "bold",
-    backgroundColor: "#F5F5F5",
+    padding: 20,height: "60vh",width: 550,margin: "150px auto",border: "1px solid black",fontWeight: "bold",backgroundColor: "#F5F5F5",
   };
 
   const handleRegistroClick = () => {
@@ -33,7 +29,23 @@ const Contenedorsesiónsalida = () => {
 
   return (
     <>
-    <Stack direction="row"alignItems="center"justifyContent="center"spacing={1}style={{ marginBottom: -125,marginTop: 75 }}>
+      <motion.div
+        initial={{ x: -100 }}
+        animate={{ x: 0 }}
+        transition={{ duration: 2 }}
+        style={{marginBottom: -125,marginTop: 75,display: "flex",alignItems: "center",justifyContent: "center",}}
+      >
+        <IconoPersonalizado icono="logotractor.png" width={64} height={64} style={{ marginRight: 10 }} />
+        <motion.span
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 2, delay: 1 }}
+          style={{ fontSize: 24, color: "#EC9107", letterSpacing: "2px" }}
+        >
+          AgroContratistas
+        </motion.span>
+      </motion.div>
+      {/* <Stack direction="row"alignItems="center"justifyContent="center"spacing={1}style={{ marginBottom: -125,marginTop: 75 }}>
 
       <IconoPersonalizado icono="logotractor.png" width={64}height={64}style={{ marginRight: 10 }}/>
       
@@ -41,48 +53,46 @@ const Contenedorsesiónsalida = () => {
         AgroContratistas
       </Typography>
 
-    </Stack>
-    <Paper elevation={20} style={paperStyle}>
-      
-      <Tabs value={value} indicatorColor="primary"textColor="primary"aria-label="disabled tabs example"onChange={(event, newValue) => setValue(newValue)}>
-        <Tab
-          label={
-            <Typography variant="subtitle2"style={{ textTransform: "none", fontSize: "1rem" }}>
-              Iniciar Sesión
-            </Typography>
-          }
-        />
-        <Tab
-          label={
-            <Typography variant="subtitle2" style={{ textTransform: "none", fontSize: "1rem" }}>
-              Inscribirse
-            </Typography>
-          }
-          disabled={!registroHabilitado}
-        />
-        <Tab
-          label={
-            <Typography variant="subtitle2"style={{ textTransform: "none", fontSize: "1rem" }}
-            >
-              Recuperar Contraseña
-            </Typography>
-          }
-          disabled={!recuperarPasswordHabilitado}
-        />
-      </Tabs>
-
-      <div style={{ marginTop: 20 }}>
-        {value === 0 && (
-          <IniciarSesion
-            activarInscribirse={handleRegistroClick}
-            activarRecuperarPassword={handleRecuperarClick}
+    </Stack> */}
+      <Paper elevation={20} style={paperStyle}>
+        <Tabs
+          value={value}
+          indicatorColor="primary"
+          textColor="primary"
+          aria-label="disabled tabs example"
+          onChange={(event, newValue) => setValue(newValue)}
+        >
+          <Tab
+            label={
+              <Typography variant="subtitle2"style={{ textTransform: "none", fontSize: "1rem" }} >Iniciar Sesión</Typography>
+            }
           />
-        )}
-        {value === 1 && <Registar />}
-        {value === 2 && <RecuperarPassword goToLogin={() => setValue(0)} />}
-      </div>
-    </Paper>
-  </>
+          <Tab
+            label={
+              <Typography  variant="subtitle2" style={{ textTransform: "none", fontSize: "1rem" }}>Inscribirse</Typography>
+            }
+            disabled={!registroHabilitado}
+          />
+          <Tab
+            label={
+              <Typography variant="subtitle2"style={{ textTransform: "none", fontSize: "1rem" }} >Recuperar Contraseña</Typography>
+            }
+            disabled={!recuperarPasswordHabilitado}
+          />
+        </Tabs>
+
+        <div style={{ marginTop: 20 }}>
+          {value === 0 && (
+            <IniciarSesion
+              activarInscribirse={handleRegistroClick}
+              activarRecuperarPassword={handleRecuperarClick}
+            />
+          )}
+          {value === 1 && <Registar />}
+          {value === 2 && <RecuperarPassword goToLogin={() => setValue(0)} />}
+        </div>
+      </Paper>
+    </>
   );
 };
 

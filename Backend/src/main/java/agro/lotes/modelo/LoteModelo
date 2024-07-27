@@ -1,4 +1,4 @@
-// package agro.parcelas.modelo;
+// package agro.lote.modelo;
 
 // import java.util.UUID;
 // import jakarta.persistence.Entity;
@@ -10,11 +10,11 @@
 // import lombok.Data;
 // import lombok.NoArgsConstructor;
 
-// @Entity(name = "parcelas")
+// @Entity(name = "lotes")
 // @NoArgsConstructor
 // @AllArgsConstructor
 // @Data
-// public class ParcelaModelo<LoteModelo> {
+// public class LoteModelo {
 
 //     @Id
 //     @GeneratedValue
@@ -25,6 +25,9 @@
 //     private String superficie;
 
 //     @ManyToOne
-//     @JoinColumn(name = "id_lote", referencedColumnName = "id")
-//     private LoteModelo lote;
+//     @JoinColumn(name = "id_establecimiento", referencedColumnName = "id")
+//     private EstablecimientoModelo establecimiento;
+
+//     @OneToMany(mappedBy = "lote")
+//     private List<ParcelaModelo> parcelas;
 // }

@@ -156,13 +156,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
   };
 
   const columns = [
-    // {
-    //   field: "id",
-    //   headerName: "",
-    //   width: 100,
-    //   headerClassName: "custom-header",
-    //   renderCell: (params) => params.api.getAllRowIds().indexOf(params.id) + 1,
-    // },
+   
     {
       field: "razonSocial",
       headerName: "Razón Social",
@@ -205,43 +199,13 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
       width: 140,
       headerClassName: "custom-header",
     },
-    // {
-    //   field: "actions",
-    //   headerName: "Acciones",
-    //   width: 205,
-    //   headerClassName: "custom-header",
-    //   renderCell: (params) => (
-    //     <Grid container alignItems="center">
-    //       <Grid item xs={6} sm={6}>
-    //         <Button
-    //           variant="outlined"
-    //           size="small"
-    //           onClick={() => handleDeleteCliente(params.row.id)}
-    //           style={{ color: "#FF0000" }}
-    //         >
-    //           <DeleteIcon />
-    //         </Button>
-    //       </Grid>
-    //       <Grid item xs={6} sm={6}>
-    //         <Button
-    //           variant="outlined"
-    //           size="small"
-    //           //onClick={() => handleEditCliente(params.row)}
-    //           style={{ color: "#008000" }}
-    //         >
-    //           <EditIcon />
-    //         </Button>
-    //       </Grid>
-    //       /{" "}
-    //     </Grid>
-    //   ),
-    // },
+   
   ];
 
   /*AGREGAR AGRICULTOR/GANADERO*/
   const handleAddCliente = async () => {
     const lugar = `${formData.personLocalidad} - ${formData.personProvincia}`;
-    const nuevaPersona = {
+    const newPerson = {
       razonSocial: formData.personRazonSocial,
       direccion: formData.personDomicilio,
       telefono: formData.personTelefono,
@@ -294,13 +258,13 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
     }
 
     // Mostrar cada dato individual en la consola
-    console.log("Razón Social:", nuevaPersona.razonSocial);
-    console.log("Dirección:", nuevaPersona.direccion);
-    console.log("Teléfono:", nuevaPersona.telefono);
-    console.log("Mail:", nuevaPersona.mail);
+    console.log("Razón Social:", newPerson.razonSocial);
+    console.log("Dirección:", newPerson.direccion);
+    console.log("Teléfono:", newPerson.telefono);
+    console.log("Mail:", newPerson.mail);
     console.log("Lugar:", lugar);
-    console.log("Condición Frente IVA:", nuevaPersona.condFrenteIva);
-    console.log("Documento:", nuevaPersona.documento);
+    console.log("Condición Frente IVA:", newPerson.condFrenteIva);
+    console.log("Documento:", newPerson.documento);
 
     try {
       const res = await fetch("http://localhost:8080/api/agricultor", {
@@ -308,7 +272,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(nuevaPersona),
+        body: JSON.stringify(newPerson),
       });
       // Verificar si la solicitud de guardado fue exitosa
       if (!res.ok) {
@@ -424,7 +388,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
   const handleUpdateCliente = async () => {
     if (!selectedRow) return;
     const lugar = `${formData.personLocalidad} - ${formData.personProvincia}`;
-    const nuevaPersona = {
+    const newPerson = {
       id: selectedRow.id,
       razonSocial: formData.personRazonSocial,
       direccion: formData.personDomicilio,
@@ -437,13 +401,13 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
 
     // Mostrar cada dato individual en la consola
     // console.log("Id:", nuevaPersona.id);
-    console.log("Razón Social:", nuevaPersona.razonSocial);
-    console.log("Dirección:", nuevaPersona.direccion);
-    console.log("Teléfono:", nuevaPersona.telefono);
-    console.log("Mail:", nuevaPersona.mail);
+    console.log("Razón Social:", newPerson.razonSocial);
+    console.log("Dirección:", newPerson.direccion);
+    console.log("Teléfono:", newPerson.telefono);
+    console.log("Mail:", newPerson.mail);
     console.log("Lugar:", lugar);
-    console.log("Condición Frente IVA:", nuevaPersona.condFrenteIva);
-    console.log("Documento:", nuevaPersona.documento);
+    console.log("Condición Frente IVA:", newPerson.condFrenteIva);
+    console.log("Documento:", newPerson.documento);
 
     try {
       const res = await fetch(`http://localhost:8080/api/agricultor`, {
@@ -451,7 +415,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(nuevaPersona),
+        body: JSON.stringify(newPerson),
       });
       // Verificar si la solicitud de guardado fue exitosa
       if (!res.ok) {
@@ -460,8 +424,8 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
 
       // Actualizar el estado rows
       const updatedRows = rows.map((row) => {
-        if (row.id === nuevaPersona.id) {
-          return nuevaPersona; // Actualizar el cliente modificado
+        if (row.id === newPerson.id) {
+          return newPerson; // Actualizar el cliente modificado
         }
         return row;
       });

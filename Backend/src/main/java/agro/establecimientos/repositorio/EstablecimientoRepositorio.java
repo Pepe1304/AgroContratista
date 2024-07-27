@@ -1,11 +1,11 @@
-package agro.establecimientos.repositorio;
+// package agro.establecimientos.repositorio;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+// import org.springframework.data.jpa.repository.JpaRepository;
 
-import agro.establecimientos.modelo.EstablecimientoModelo;
-import java.util.UUID;
+// import agro.establecimientos.modelo.EstablecimientoModelo;
+// import java.util.UUID;
 
-public interface EstablecimientoRepositorio extends JpaRepository<EstablecimientoModelo, UUID> {
-    boolean existsByNombre(String nombre);
+// public interface EstablecimientoRepositorio extends JpaRepository<EstablecimientoModelo, UUID> {
+//    // boolean existsByNombre(String nombre);
 
-}
+// }
