@@ -156,7 +156,6 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
   };
 
   const columns = [
-   
     {
       field: "razonSocial",
       headerName: "Razón Social",
@@ -199,7 +198,6 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
       width: 140,
       headerClassName: "custom-header",
     },
-   
   ];
 
   /*AGREGAR AGRICULTOR/GANADERO*/
@@ -825,6 +823,7 @@ const AgricultorGanadero = ({ onSearchChange, onAddClick }) => {
             optionUpdateFunction={handleEdit}
             setSelectedRow={setSelectedRow}
             selectedRow={selectedRow}
+            //isCollapsible={false}
           />
         </div>
       </div>
