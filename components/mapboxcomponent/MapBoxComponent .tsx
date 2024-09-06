@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  TextField,
-} from "@mui/material";
+import { Button,Dialog,DialogActions,DialogContent,DialogTitle, IconButton, TextField,} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Fullscreen, FullscreenExit } from "@mui/icons-material";
 import Map, { Marker, Source, Layer } from "react-map-gl";
@@ -122,10 +114,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
       fullWidth
       sx={{
         "& .MuiPaper-root": {
-          width: isMaximized ? "100%" : "auto",
-          height: isMaximized ? "100%" : "auto",
-          maxWidth: isMaximized ? "100%" : "1200px",
-          maxHeight: "800px",
+          width: isMaximized ? "100%" : "auto",height: isMaximized ? "100%" : "auto",maxWidth: isMaximized ? "100%" : "1200px",maxHeight: "800px",
         },
       }}
     >
@@ -150,9 +139,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
       <DialogContent>
         <div
           style={{
-            position: "relative",
-            height: isMaximized ? "100%" : "500px",
-            border: "2px solid black",
+            position: "relative", height: isMaximized ? "100%" : "500px",border: "2px solid black",
           }}
         >
           <Map
@@ -171,10 +158,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
               >
                 <div
                   style={{
-                    backgroundColor: "red",
-                    borderRadius: "50%",
-                    width: "12px",
-                    height: "12px",
+                    backgroundColor: "red", borderRadius: "50%",width: "12px", height: "12px",
                   }}
                 />
               </Marker>
@@ -196,10 +180,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
                 <Layer
                   id="polygon-layer"
                   type="fill"
-                  paint={{
-                    "fill-color": "#ff7f0e",
-                    "fill-opacity": 0.3,
-                  }}
+                  paint={{"fill-color": "#ff7f0e","fill-opacity": 0.3,}}
                 />
               </Source>
             )}
@@ -212,10 +193,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
           InputProps={{
             readOnly: true,
           }}
-          sx={{
-            mt: 2, // Añade un margen superior para separarlo del mapa
-            width: "100%", // Ajusta el ancho para que sea consistente
-          }}
+          sx={{ mt: 2, width: "100%"}}
         />
       </DialogContent>
 
