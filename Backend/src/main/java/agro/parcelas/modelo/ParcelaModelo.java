@@ -1,30 +1,32 @@
-// package agro.parcelas.modelo;
+package agro.parcelas.modelo;
 
-// import java.util.UUID;
-// import jakarta.persistence.Entity;
-// import jakarta.persistence.GeneratedValue;
-// import jakarta.persistence.Id;
-// import jakarta.persistence.JoinColumn;
-// import jakarta.persistence.ManyToOne;
-// import lombok.AllArgsConstructor;
-// import lombok.Data;
-// import lombok.NoArgsConstructor;
+import java.util.UUID;
 
-// @Entity(name = "parcelas")
-// @NoArgsConstructor
-// @AllArgsConstructor
-// @Data
-// public class ParcelaModelo<LoteModelo> {
+import agro.lotes.modelo.LoteModelo;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-//     @Id
-//     @GeneratedValue
-//     private UUID id;
+@Entity(name = "parcelas")
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class ParcelaModelo {
 
-//     private String nombre;
-//     private String coordenadas;
-//     private String superficie;
+    @Id
+    @GeneratedValue
+    private UUID id;
 
-//     @ManyToOne
-//     @JoinColumn(name = "id_lote", referencedColumnName = "id")
-//     private LoteModelo lote;
-// }
+    private String nombre;
+    private String coordenadas;
+    private String superficie;
+
+    @ManyToOne
+    @JoinColumn(name = "id_lote")
+    private LoteModelo lote;
+}

@@ -16,36 +16,41 @@
 // @JoinTable: Se utiliza en relaciones muchos a muchos para definir la tabla
 // intermedia y las columnas de clave foránea.
 
-// package agro.establecimientos.modelo;
+package agro.establecimientos.modelo;
 
-// import java.util.List;
-// import java.util.UUID;
+import java.util.List;
+import java.util.UUID;
 
-// import agro.personas.modelo.PersonaModelo;
-// import jakarta.persistence.Entity;
-// import jakarta.persistence.GeneratedValue;
-// import jakarta.persistence.Id;
-// import jakarta.persistence.JoinColumn;
-// import jakarta.persistence.OneToOne;
-// import lombok.AllArgsConstructor;
-// import lombok.Data;
-// import lombok.NoArgsConstructor;
+import agro.lotes.modelo.LoteModelo;
+import agro.personas.modelo.PersonaModelo;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-// @Entity(name = "establecimientos")
-// @NoArgsConstructor
-// @AllArgsConstructor
-// @Data
-// public class EstablecimientoModelo {
+@Entity(name = "establecimientos")
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class EstablecimientoModelo {
 
-// @Id
-// @GeneratedValue
-// private UUID id;
+    @Id
+    @GeneratedValue
+    private UUID id;
 
-// @OneToOne
-// @JoinColumn(name = "id_persona", referencedColumnName = "id")
-// private String nombre;
-// private PersonaModelo persona;
-// private String lugar;
-// private List<String> lotes;
-// private List<String> parcelas;
-// }
+    private String nombre;
+
+    @ManyToOne
+    @JoinColumn(name = "id_persona")
+    private PersonaModelo persona;
+
+    private String lugar;
+
+    @OneToMany(mappedBy = "establecimiento")
+    private List<LoteModelo> lotes;
+}

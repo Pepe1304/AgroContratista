@@ -1,87 +1,93 @@
-import React, { useState, useEffect } from "react";
-import { Button,Dialog,DialogActions,DialogContent,DialogTitle, IconButton, TextField,} from "@mui/material";
+
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  TextField,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Fullscreen, FullscreenExit } from "@mui/icons-material";
+import { Fullscreen, FullscreenExit, LocationOn } from "@mui/icons-material";
 import Map, { Marker, Source, Layer } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { blue, green, red } from "@mui/material/colors";
+import * as turf from "@turf/turf";
 
 const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
   const [viewport, setViewport] = useState({
-    latitude: -30.5667, // Coordenadas para Suardi, Santa Fe
+    latitude: -30.5667,
     longitude: -62.0833,
     zoom: 14,
   });
   const [points, setPoints] = useState([]);
   const [polygon, setPolygon] = useState([]);
   const [averageCoordinate, setAverageCoordinate] = useState("");
-  const [isMaximized, setIsMaximized] = useState(false); // Estado para maximizar/minimizar
+  const [areaInHectares, setAreaInHectares] = useState("");
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [mapStyle, setMapStyle] = useState(
+    "mapbox://styles/mapbox/streets-v11"
+  );
+  const mapRef = useRef(null);
 
-  // // Función para obtener la ubicación actual del GPS
-  // const getCurrentLocation = () => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       (position) => {
-  //         const { latitude, longitude } = position.coords;
-  //         addPoint(latitude, longitude);
-  //       },
-  //       (error) => {
-  //         // Manejar los diferentes tipos de errores
-  //         switch (error.code) {
-  //           case error.PERMISSION_DENIED:
-  //             alert("Usuario denegó la solicitud de geolocalización.");
-  //             break;
-  //           case error.POSITION_UNAVAILABLE:
-  //             alert("Información de ubicación no disponible.");
-  //             break;
-  //           case error.TIMEOUT:
-  //             alert(
-  //               "La petición para obtener la ubicación del usuario ha caducado."
-  //             );
-  //             break;
-  //           default:
-  //             alert("Error desconocido al obtener la ubicación.");
-  //             break;
-  //         }
-  //       },
-  //       { timeout: 5000 } // Establece un tiempo límite para la solicitud
-  //     );
-  //   } else {
-  //     alert("Geolocalización no es soportada por este navegador.");
-  //   }
-  // };
-
-  // // Función para agregar un punto
-  // const addPoint = (latitude, longitude) => {
-  //   if (points.length < 4) {
-  //     setPoints([...points, { latitude, longitude }]);
-  //   } else {
-  //     alert("Solo puedes marcar 4 puntos.");
-  //   }
-  // };
+  const toggleMapStyle = () => {
+    setMapStyle((prevStyle) =>
+      prevStyle === "mapbox://styles/mapbox/streets-v11"
+        ? "mapbox://styles/mapbox/satellite-streets-v11"
+        : "mapbox://styles/mapbox/streets-v11"
+    );
+  };
 
   useEffect(() => {
     if (points.length === 4) {
       const lastPoint = points[0];
-      const polygon = [...points, lastPoint];
-      setPolygon(polygon);
+      const polygonCoords = [...points, lastPoint].map((p) => [
+        p.longitude,
+        p.latitude,
+      ]);
+      setPolygon(polygonCoords);
 
-      // Calcular la coordenada promedio
+      // Crear un objeto GeoJSON válido para el polígono
+      const polygonGeoJSON = {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "Polygon",
+          coordinates: [polygonCoords],
+        },
+      };
+
+      // Calcular el área en metros cuadrados
+      const areaInSquareMeters = turf.area(polygonGeoJSON as turf.AllGeoJSON);
+      const areaInHectares = areaInSquareMeters / 10000;
+
+      // Calcular coordenada promedio
       const avgLongitude =
         points.reduce((sum, point) => sum + point.longitude, 0) / points.length;
       const avgLatitude =
         points.reduce((sum, point) => sum + point.latitude, 0) / points.length;
 
-      setAverageCoordinate(
-        `(${avgLatitude.toFixed(6)}, ${avgLongitude.toFixed(6)})`
-      );
+      const avgCoordinate = `(${avgLatitude.toFixed(6)}, ${avgLongitude.toFixed(
+        6
+      )})`;
+
+      // Actualizar el estado con la coordenada promedio y el área
+      setAverageCoordinate(avgCoordinate);
+      setAreaInHectares(areaInHectares.toFixed(2));
     } else {
       setPolygon([]);
       setAverageCoordinate("");
+      setAreaInHectares("");
     }
-  }, [points]);
+
+    if (mapRef.current) {
+      mapRef.current.getMap().resize();
+    }
+  }, [points, isMaximized]);
 
   const handleMapClick = (event) => {
-    //getCurrentLocation(); // Actualizar para usar la ubicación del GPS
     const { lngLat } = event;
     const longitude = lngLat.lng;
     const latitude = lngLat.lat;
@@ -94,7 +100,8 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
   };
 
   const handleSaveCoordinates = () => {
-    if (onPointsSelected) onPointsSelected(averageCoordinate);
+    if (onPointsSelected)
+      onPointsSelected({ coordinates: averageCoordinate, areaInHectares });
     handleCloseDialog();
   };
 
@@ -103,7 +110,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
   };
 
   const toggleMaximize = () => {
-    setIsMaximized(!isMaximized); // Alterna el estado de maximizado
+    setIsMaximized(!isMaximized);
   };
 
   return (
@@ -114,7 +121,10 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
       fullWidth
       sx={{
         "& .MuiPaper-root": {
-          width: isMaximized ? "100%" : "auto",height: isMaximized ? "100%" : "auto",maxWidth: isMaximized ? "100%" : "1200px",maxHeight: "800px",
+          width: isMaximized ? "100%" : "auto",
+          height: isMaximized ? "100%" : "auto",
+          maxWidth: isMaximized ? "100%" : "1200px",
+          maxHeight: "800px",
         },
       }}
     >
@@ -139,12 +149,15 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
       <DialogContent>
         <div
           style={{
-            position: "relative", height: isMaximized ? "100%" : "500px",border: "2px solid black",
+            position: "relative",
+            height: isMaximized ? "100%" : "500px",
+            border: "2px solid black",
           }}
         >
           <Map
+            ref={mapRef}
             {...viewport}
-            mapStyle="mapbox://styles/mapbox/streets-v11"
+            mapStyle={mapStyle}
             onMove={(evt) => setViewport(evt.viewState)}
             onClick={handleMapClick}
             mapboxAccessToken="pk.eyJ1IjoicGVwZW1hcGJveDg2IiwiYSI6ImNtMHBoYzRsbzAxNGIycnBza2RzbmRudHQifQ.440E50Y_qT002C9sFQWm5A"
@@ -156,11 +169,9 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
                 longitude={point.longitude}
                 latitude={point.latitude}
               >
-                <div
-                  style={{
-                    backgroundColor: "red", borderRadius: "50%",width: "12px", height: "12px",
-                  }}
-                />
+                <IconButton>
+                  <LocationOn style={{ color: "red", fontSize: "24px" }} />
+                </IconButton>
               </Marker>
             ))}
             {polygon.length > 0 && (
@@ -169,18 +180,17 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
                 type="geojson"
                 data={{
                   type: "Feature",
+                  properties: {},
                   geometry: {
                     type: "Polygon",
-                    coordinates: [
-                      polygon.map((p) => [p.longitude, p.latitude]),
-                    ],
+                    coordinates: [polygon],
                   },
                 }}
               >
                 <Layer
                   id="polygon-layer"
                   type="fill"
-                  paint={{"fill-color": "#ff7f0e","fill-opacity": 0.3,}}
+                  paint={{ "fill-color": "#ff7f0e", "fill-opacity": 0.3 }}
                 />
               </Source>
             )}
@@ -190,19 +200,41 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
           variant="outlined"
           label="Coordenada Promedio"
           value={averageCoordinate}
-          InputProps={{
-            readOnly: true,
-          }}
-          sx={{ mt: 2, width: "100%"}}
+          InputProps={{ readOnly: true }}
+          sx={{ mt: 2, mr: 2, width: "calc(50% - 8px)" }} // Añade margen a la derecha
         />
+        <TextField
+          variant="outlined"
+          label="Área en Hectáreas"
+          value={areaInHectares}
+          InputProps={{ readOnly: true }}
+          sx={{ mt: 2, width: "calc(50% - 8px)" }} // Ajusta el ancho para el margen
+        />
+        <Button
+          onClick={toggleMapStyle}
+          sx={{ mt: 2, backgroundColor: green[600] }}
+          variant="contained"
+        >
+          {mapStyle === "mapbox://styles/mapbox/streets-v11"
+            ? "Satélite"
+            : "Calles"}
+        </Button>
       </DialogContent>
 
       <DialogActions sx={{ mt: 2 }}>
-        <Button onClick={handleRemoveLastPoint} color="secondary">
+        <Button
+          onClick={handleRemoveLastPoint}
+          color="primary"
+          sx={{ color: red[500] }}
+        >
           Eliminar último punto
         </Button>
-        <Button onClick={handleSaveCoordinates} color="primary">
-          Guardar Coordenadas
+        <Button
+          onClick={handleSaveCoordinates}
+          sx={{ backgroundColor: blue[700], color: "#ffffff" }}
+          color="primary"
+        >
+          Guardar
         </Button>
       </DialogActions>
     </Dialog>
@@ -210,180 +242,3 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
 };
 
 export default MapDialog;
-
-// import React, { useState, useEffect } from "react";
-// import {
-//   Button,
-//   Dialog,
-//   DialogActions,
-//   DialogContent,
-//   DialogTitle,
-//   IconButton,
-//   TextField,
-// } from "@mui/material";
-// import CloseIcon from "@mui/icons-material/Close";
-// import Map, { Marker, Source, Layer } from "react-map-gl";
-// import "mapbox-gl/dist/mapbox-gl.css";
-// import { red } from "@mui/material/colors";
-
-// const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
-//   const [viewport, setViewport] = useState({
-//     latitude: -30.5667, // Coordenadas para Suardi, Santa Fe
-//     longitude: -62.0833,
-//     zoom: 14,
-//   });
-//   const [points, setPoints] = useState([]);
-//   const [polygon, setPolygon] = useState([]);
-//   const [averageCoordinate, setAverageCoordinate] = useState("");
-
-//   useEffect(() => {
-//     if (points.length === 4) {
-//       const lastPoint = points[0];
-//       const polygon = [...points, lastPoint];
-//       setPolygon(polygon);
-
-//       // Calcular la coordenada promedio
-//       const avgLongitude =
-//         points.reduce((sum, point) => sum + point.longitude, 0) / points.length;
-//       const avgLatitude =
-//         points.reduce((sum, point) => sum + point.latitude, 0) / points.length;
-
-//       setAverageCoordinate(
-//         `(${avgLatitude.toFixed(6)}, ${avgLongitude.toFixed(6)})`
-//       );
-//     } else {
-//       setPolygon([]);
-//       setAverageCoordinate("");
-//     }
-//   }, [points]);
-
-//   const handleMapClick = (event) => {
-//     const { lngLat } = event;
-//     const longitude = lngLat.lng;
-//     const latitude = lngLat.lat;
-
-//     if (points.length < 4) {
-//       setPoints([...points, { longitude, latitude }]);
-//     } else {
-//       alert("Solo puedes marcar 4 puntos.");
-//     }
-//   };
-
-//   const handleSaveCoordinates = () => {
-//     if (onPointsSelected) onPointsSelected(averageCoordinate);
-//     handleCloseDialog();
-//   };
-
-//   const handleRemoveLastPoint = () => {
-//     setPoints(points.slice(0, -1));
-//   };
-
-//   return (
-//     <Dialog
-//       open={openDialog}
-//       onClose={handleCloseDialog}
-//       maxWidth="md"
-//       fullWidth
-//     >
-//       <DialogTitle>
-//         Marcar Coordenadas
-//         <IconButton
-//           aria-label="close"
-//           onClick={handleCloseDialog}
-//           sx={{ position: "absolute", right: 8, top: 8 }}
-//         >
-//           <CloseIcon />
-//         </IconButton>
-//       </DialogTitle>
-//       <DialogContent>
-//         <div
-//           style={{
-//             position: "relative",
-//             height: "400px",
-//             border: "2px solid black",
-//           }}
-//         >
-//           <Map
-//             {...viewport}
-//             mapStyle="mapbox://styles/mapbox/streets-v11"
-//             onMove={(evt) => setViewport(evt.viewState)}
-//             onClick={handleMapClick}
-//             mapboxAccessToken="pk.eyJ1IjoicGVwZW1hcGJveDg2IiwiYSI6ImNtMHBoYzRsbzAxNGIycnBza2RzbmRudHQifQ.440E50Y_qT002C9sFQWm5A"
-//             style={{ width: "100%", height: "100%" }} // Asegúrate de que el mapa ocupe todo el contenedor
-//           >
-//             {points.map((point, index) => (
-//               <Marker
-//                 key={index}
-//                 longitude={point.longitude}
-//                 latitude={point.latitude}
-//               >
-//                 <div
-//                   style={{
-//                     backgroundColor: "red",
-//                     borderRadius: "50%",
-//                     width: "12px",
-//                     height: "12px",
-//                   }}
-//                 />
-//               </Marker>
-//             ))}
-//             {polygon.length > 0 && (
-//               <Source
-//                 id="polygon-source"
-//                 type="geojson"
-//                 data={{
-//                   type: "Feature",
-//                   geometry: {
-//                     type: "Polygon",
-//                     coordinates: [
-//                       polygon.map((p) => [p.longitude, p.latitude]),
-//                     ],
-//                   },
-//                 }}
-//               >
-//                 <Layer
-//                   id="polygon-layer"
-//                   type="fill"
-//                   paint={{
-//                     "fill-color": "#ff7f0e",
-//                     "fill-opacity": 0.3,
-//                   }}
-//                 />
-//               </Source>
-//             )}
-//           </Map>
-//         </div>
-//         <TextField
-//           variant="outlined"
-//           label="Coordenadas"
-//           value={averageCoordinate}
-//           InputProps={{
-//             readOnly: true,
-//           }}
-//           sx={{ marginTop: 2 }}
-//         />
-//       </DialogContent>
-
-//       <DialogActions>
-//         <Button onClick={handleRemoveLastPoint} sx={{ color: red[500] }}>
-//           Eliminar último punto
-//         </Button>
-//         <Button onClick={handleCloseDialog} color="primary">
-//           Cancelar
-//         </Button>
-//         <Button
-//           onClick={handleSaveCoordinates}
-//           sx={{
-//             backgroundColor: "#007bff",
-//             color: "#fff",
-//             "&:hover": { backgroundColor: "#0056b3" },
-//           }}
-//         >
-//           Guardar Coordenadas
-//         </Button>
-//       </DialogActions>
-//     </Dialog>
-//   );
-// };
-
-// export default MapDialog;

@@ -1,0 +1,13 @@
+.contenedor {
+  color: rgb(193, 148, 0);
+  white-space: nowrap;
+  overflow: hidden;
+  width: 210px;
+  animation: type ease-in-out 4s;
+}
+
+@keyframes type {
+  from {
+    width: 0;
+  }
+}
