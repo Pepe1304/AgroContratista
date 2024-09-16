@@ -1,7 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
-import {Button,  Dialog,DialogActions,DialogContent,DialogTitle,IconButton,TextField,List,ListItem,ListItemText,} from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import {Fullscreen,FullscreenExit,LocationOn,Map as MapIcon, Satellite as SatelliteIcon,} from "@mui/icons-material";
+import {
+  Fullscreen,
+  FullscreenExit,
+  LocationOn,
+  Map as MapIcon,
+  Satellite as SatelliteIcon,
+} from "@mui/icons-material";
 import Map, { Marker, Source, Layer } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { blue, green, red } from "@mui/material/colors";
@@ -21,6 +38,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
   const [mapStyle, setMapStyle] = useState(
     "mapbox://styles/mapbox/streets-v11"
   );
+  const [parcelPolygon, setParcelPolygon] = useState([]);
   const [error, setError] = useState("");
   const [parcels, setParcels] = useState([]);
   const [parcelData, setParcelData] = useState([]);
@@ -54,7 +72,6 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
 
       const areaInSquareMeters = turf.area(polygonGeoJSON as turf.AllGeoJSON);
       const areaInHectares = areaInSquareMeters / 10000;
-
       const avgLongitude =
         points.reduce((sum, point) => sum + point.longitude, 0) / points.length;
       const avgLatitude =
@@ -73,6 +90,17 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
 
     if (mapRef.current) {
       mapRef.current.getMap().resize();
+    }
+
+    if (parcels.length >= 4) {
+      const lastPoint = parcels[0];
+      const parcelPolygonCoords = [...parcels, lastPoint].map((p) => [
+        p.longitude,
+        p.latitude,
+      ]);
+      setParcelPolygon(parcelPolygonCoords);
+    } else {
+      setParcelPolygon([]);
     }
 
     // Calculate parcel data
@@ -141,7 +169,15 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
       onClose={handleCloseDialog}
       maxWidth="md"
       fullWidth
-      sx={{ "& .MuiPaper-root": {width: isMaximized ? "100%" : "auto", height: isMaximized ? "100%" : "auto", maxWidth: isMaximized ? "100%" : "1200px",maxHeight: "800px"} }}>
+      sx={{
+        "& .MuiPaper-root": {
+          width: isMaximized ? "100%" : "auto",
+          height: isMaximized ? "100%" : "auto",
+          maxWidth: isMaximized ? "100%" : "1200px",
+          maxHeight: "800px",
+        },
+      }}
+    >
       <DialogTitle>
         Marcar Coordenadas
         <IconButton
@@ -166,7 +202,13 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
           las parcelas dentro del lote. La coordenada promedio y el área se
           calcularán automáticamente.
         </div>
-        <div style={{position: "relative",height: isMaximized ? "100%" : "500px", border: "2px solid black",}}>
+        <div
+          style={{
+            position: "relative",
+            height: isMaximized ? "100%" : "500px",
+            border: "2px solid black",
+          }}
+        >
           <Map
             ref={mapRef}
             {...viewport}
@@ -182,7 +224,13 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
                 longitude={point.longitude}
                 latitude={point.latitude}
               >
-                <LocationOn style={{ color: "red",fontSize: "24px",animation: "bounce 0.5s",}}/>
+                <LocationOn
+                  style={{
+                    color: "red",
+                    fontSize: "24px",
+                    animation: "bounce 0.5s",
+                  }}
+                />
               </Marker>
             ))}
             {parcels.map((point, index) => (
@@ -191,7 +239,13 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
                 longitude={point.longitude}
                 latitude={point.latitude}
               >
-                <LocationOn style={{ color: "blue", fontSize: "24px",animation: "bounce 0.5s", }}/>
+                <LocationOn
+                  style={{
+                    color: "blue",
+                    fontSize: "24px",
+                    animation: "bounce 0.5s",
+                  }}
+                />
               </Marker>
             ))}
             {polygon.length > 0 && (
@@ -208,6 +262,24 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
                   id="polygon-layer"
                   type="fill"
                   paint={{ "fill-color": "#ff7f0e", "fill-opacity": 0.3 }}
+                />
+              </Source>
+            )}
+
+            {parcelPolygon.length > 0 && (
+              <Source
+                id="parcel-polygon-source"
+                type="geojson"
+                data={{
+                  type: "Feature",
+                  properties: {},
+                  geometry: { type: "Polygon", coordinates: [parcelPolygon] },
+                }}
+              >
+                <Layer
+                  id="parcel-polygon-layer"
+                  type="fill"
+                  paint={{ "fill-color": "#00f", "fill-opacity": 0.3 }}
                 />
               </Source>
             )}
@@ -263,7 +335,9 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
           }
           variant="contained"
         >
-          {mapStyle === "mapbox://styles/mapbox/streets-v11" ? "Satélite": "Calles"}
+          {mapStyle === "mapbox://styles/mapbox/streets-v11"
+            ? "Satélite"
+            : "Calles"}
         </Button>
       </DialogContent>
 

@@ -1,3 +1,0 @@
-# AgroServicio
-# AgroContratista
-# AgroContratista
