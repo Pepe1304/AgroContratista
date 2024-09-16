@@ -1,24 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  TextField,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
+import {Button,  Dialog,DialogActions,DialogContent,DialogTitle,IconButton,TextField,List,ListItem,ListItemText,} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import {
-  Fullscreen,
-  FullscreenExit,
-  LocationOn,
-  Map as MapIcon,
-  Satellite as SatelliteIcon,
-} from "@mui/icons-material";
+import {Fullscreen,FullscreenExit,LocationOn,Map as MapIcon, Satellite as SatelliteIcon,} from "@mui/icons-material";
 import Map, { Marker, Source, Layer } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { blue, green, red } from "@mui/material/colors";
@@ -76,7 +59,6 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
         points.reduce((sum, point) => sum + point.longitude, 0) / points.length;
       const avgLatitude =
         points.reduce((sum, point) => sum + point.latitude, 0) / points.length;
-
       const avgCoordinate = `(${avgLatitude.toFixed(6)}, ${avgLongitude.toFixed(
         6
       )})`;
@@ -159,15 +141,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
       onClose={handleCloseDialog}
       maxWidth="md"
       fullWidth
-      sx={{
-        "& .MuiPaper-root": {
-          width: isMaximized ? "100%" : "auto",
-          height: isMaximized ? "100%" : "auto",
-          maxWidth: isMaximized ? "100%" : "1200px",
-          maxHeight: "800px",
-        },
-      }}
-    >
+      sx={{ "& .MuiPaper-root": {width: isMaximized ? "100%" : "auto", height: isMaximized ? "100%" : "auto", maxWidth: isMaximized ? "100%" : "1200px",maxHeight: "800px"} }}>
       <DialogTitle>
         Marcar Coordenadas
         <IconButton
@@ -192,13 +166,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
           las parcelas dentro del lote. La coordenada promedio y el área se
           calcularán automáticamente.
         </div>
-        <div
-          style={{
-            position: "relative",
-            height: isMaximized ? "100%" : "500px",
-            border: "2px solid black",
-          }}
-        >
+        <div style={{position: "relative",height: isMaximized ? "100%" : "500px", border: "2px solid black",}}>
           <Map
             ref={mapRef}
             {...viewport}
@@ -214,13 +182,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
                 longitude={point.longitude}
                 latitude={point.latitude}
               >
-                <LocationOn
-                  style={{
-                    color: "red",
-                    fontSize: "24px",
-                    animation: "bounce 0.5s",
-                  }}
-                />
+                <LocationOn style={{ color: "red",fontSize: "24px",animation: "bounce 0.5s",}}/>
               </Marker>
             ))}
             {parcels.map((point, index) => (
@@ -229,13 +191,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
                 longitude={point.longitude}
                 latitude={point.latitude}
               >
-                <LocationOn
-                  style={{
-                    color: "blue",
-                    fontSize: "24px",
-                    animation: "bounce 0.5s",
-                  }}
-                />
+                <LocationOn style={{ color: "blue", fontSize: "24px",animation: "bounce 0.5s", }}/>
               </Marker>
             ))}
             {polygon.length > 0 && (
@@ -245,10 +201,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
                 data={{
                   type: "Feature",
                   properties: {},
-                  geometry: {
-                    type: "Polygon",
-                    coordinates: [polygon],
-                  },
+                  geometry: { type: "Polygon", coordinates: [polygon] },
                 }}
               >
                 <Layer
@@ -310,9 +263,7 @@ const MapDialog = ({ openDialog, handleCloseDialog, onPointsSelected }) => {
           }
           variant="contained"
         >
-          {mapStyle === "mapbox://styles/mapbox/streets-v11"
-            ? "Satélite"
-            : "Calles"}
+          {mapStyle === "mapbox://styles/mapbox/streets-v11" ? "Satélite": "Calles"}
         </Button>
       </DialogContent>
 
