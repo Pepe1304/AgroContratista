@@ -646,16 +646,18 @@ const Establecimientos = (onSearchChange, onAddClick) => {
   const handleParcelPointsSelected = (points) => {
     setParcelPoints(points);
     // Calcular la ubicación promedio de las parcelas
-    const avgLat = points.reduce((sum, p) => sum + p.latitude, 0) / points.length;
-    const avgLng =points.reduce((sum, p) => sum + p.longitude, 0) / points.length;
+    const avgLat =
+      points.reduce((sum, p) => sum + p.latitude, 0) / points.length;
+    const avgLng =
+      points.reduce((sum, p) => sum + p.longitude, 0) / points.length;
     console.log(
       `Ubicación promedio de las parcelas: Lat ${avgLat}, Lng ${avgLng}`
     );
   };
 
-  const handlePointsSelected = (points) => {
-    console.log("Puntos seleccionados:", points);
-    // Aquí puedes manejar los puntos seleccionados (por ejemplo, guardarlos en un estado)
+  const handlePointsSelected = ({ coordinates, areaInHectares }) => {
+    setCoordenadas(coordinates); // Update the state for coordinates
+    setSuperficie(areaInHectares); // Update the state for area
   };
 
   return (
@@ -904,20 +906,30 @@ const Establecimientos = (onSearchChange, onAddClick) => {
                           sx={{ margin: "1px 10px 10px 0" }} // Ajusta el margen superior e inferior
                         />
                       </Grid>
-                      <Grid item xs={3}>
+                      <Grid item xs={4}>
                         <TextField
                           label="Coordenadas"
                           value={coordenadas}
                           onChange={(e) => setCoordenadas(e.target.value)}
-                          name={  isParcelas? "parcelCoordinates": "plotLandCoordinates"}
-                          sx={{ margin: "1px 10px 10px 0" }} // Ajusta el margen superior e inferior
+                          name={
+                            isParcelas
+                              ? "parcelCoordinates"
+                              : "plotLandCoordinates"
+                          }
+                          sx={{ margin: "1px 10px 10px 0", width: "100%" }} // Ajusta el margen superior e inferior
                         />
                       </Grid>
                       <Grid item xs={1}>
                         <Button
                           variant="contained"
                           onClick={handleOpenDialog}
-                          sx={{ backgroundColor: "#0FB60B", color: "#ffffff",margin: "0px 5px",}} >
+                          sx={{
+                            backgroundColor: "#0FB60B",
+                            color: "#ffffff",
+                            margin: "0px 5px",
+                            width: "100%", // Hace que el botón ocupe todo el ancho disponible
+                          }}
+                        >
                           <AddLocationIcon />
                         </Button>
                       </Grid>
@@ -930,12 +942,11 @@ const Establecimientos = (onSearchChange, onAddClick) => {
                               onChange={(e) => setSuperficie(e.target.value)}
                               name={isParcelas ? "parcelArea" : "plotLandArea"}
                               sx={{
-                                margin: "1px 5px 10px 0",
-                                marginLeft: "20px",
-                              }} // Reduce el margen para acercarlo al botón
+                                margin: "1px 1px 10px 10px",
+                                width: "65%", // Hace que el campo de superficie ocupe todo el ancho disponible en su contenedor
+                              }}
                             />
                           </Grid>
-
                           <Grid item xs={4}>
                             <Tooltip
                               title="La superficie total de las parcelas no puede exceder la superficie del lote."
@@ -974,7 +985,8 @@ const Establecimientos = (onSearchChange, onAddClick) => {
                                 sx={{
                                   backgroundColor: "#0FB60B",
                                   color: "#ffffff",
-                                  margin: "0px 0px", // Elimina márgenes para que quede más cerca
+                                  width: "auto", // Ajusta el ancho automáticamente para que se alinee mejor
+                                  ml: -6, // Ajusta el margen izquierdo negativo para moverlo hacia la izquierda
                                 }}
                               >
                                 <AddRoundedIcon />
@@ -984,6 +996,7 @@ const Establecimientos = (onSearchChange, onAddClick) => {
                         </Grid>
                       </Grid>
                     </Grid>
+
                     <div>
                       <MapDialog
                         openDialog={openDialog}
